@@ -1,7 +1,7 @@
 ﻿/**********************************************************************************
 
 Simple Smart Types Lite
-------------------
+-----------------------
 
 The MIT License (MIT)
 
@@ -29,15 +29,15 @@ SOFTWARE.
 
 namespace SSTypes
 {
-    using System;
-    using System.Text;
-
     /// <summary>
-    /// Used for quick and save (without throwing exceptions) operations with Double type.
+    /// Used for quick and save operations with System.Double type.
+    /// Compatible with System.Double and can be used whenever System.Double used.
     /// </summary>
-    public struct SmartDouble
+    [System.Serializable, System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    [System.Runtime.InteropServices.ComVisible(true)]
+    public struct SmartDouble : System.IComparable, System.IComparable<SmartDouble>, System.IEquatable<SmartDouble>
     {
-        private Double m_v;
+        private System.Double m_v;
 
         /// <summary>
         /// Maximal valid value (10000000000000000.0)
@@ -62,7 +62,7 @@ namespace SSTypes
         /// <summary>
         /// Bad value represented absent data, wrong data, e.t.c.
         /// </summary>
-        public static readonly SmartDouble BadValue = Double.NaN;
+        public static readonly SmartDouble BadValue = System.Double.NaN;
 
         // Private constants
 
@@ -104,15 +104,23 @@ namespace SSTypes
             new double[] { 0, 1e-16, 2e-16, 3e-16, 4e-16, 5e-16, 6e-16, 7e-16, 8e-16, 9e-16, 10e-16 }
         };
 
-        private readonly static char[] chars = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+        private readonly static System.Char[] chars = new System.Char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
-        private readonly static Int64[] correction_powers = new Int64[] { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000 };
-        private readonly static double[] decimal_powers = new double[] { 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 1e-11, 1e-12, 1e-13, 1e-14, 1e-15, 1e-16, 1e-17, 1e-18 };
+        private readonly static System.Int64[] correction_powers = new System.Int64[] { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000 };
+        private readonly static System.Double[] decimal_powers = new System.Double[] { 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 1e-11, 1e-12, 1e-13, 1e-14, 1e-15, 1e-16, 1e-17, 1e-18 };
 
         /// <summary>
-        /// Construct SmartDouble from Double.
+        /// Construct SmartDouble from System.Double.
         /// </summary>
-        public SmartDouble(Double value)
+        public SmartDouble(System.Double value)
+        {
+            m_v = value;
+        }
+
+        /// <summary>
+        /// Construct SmartDouble from System.Single.
+        /// </summary>
+        private SmartDouble(System.Single value)
         {
             m_v = value;
         }
@@ -123,26 +131,42 @@ namespace SSTypes
         public bool isBad()
         {
             return (
-                Double.IsNaN(m_v) ||
+                System.Double.IsNaN(m_v) ||
                 (MaxValue.m_v < m_v) || (m_v < MaxValue.m_v) ||
                 ((m_v != 0) && (MaxnegativeValue < m_v) && (m_v < MinPositiveValue))
                 );
         }
 
         /// <summary>
-        /// Converts the value of Double to SmartDouble.
+        /// Converts the value of System.Double to SmartDouble.
         /// </summary>
-        public static implicit operator SmartDouble(Double value)
+        public static implicit operator SmartDouble(System.Double value)
         {
             return new SmartDouble(value);
         }
 
         /// <summary>
-        /// Converts the value of SmartDouble to Double.
+        /// Converts the value of SmartDouble to System.Double.
         /// </summary>
-        public static implicit operator Double(SmartDouble value)
+        public static implicit operator System.Double(SmartDouble value)
         {
             return value.m_v;
+        }
+
+        /// <summary>
+        /// Converts the value of System.Single to SmartDouble.
+        /// </summary>
+        public static implicit operator SmartDouble(System.Single value)
+        {
+            return new SmartDouble(value);
+        }
+
+        /// <summary>
+        /// Converts the value of SmartDouble to System.Single.
+        /// </summary>
+        public static explicit operator System.Single(SmartDouble value)
+        {
+            return (System.Single)value.m_v;
         }
 
         /// <summary>
@@ -159,15 +183,15 @@ namespace SSTypes
         /// <summary>
         /// Converts the value of SmartDouble to System.Int64.
         /// </summary>
-        public static explicit operator Int64(SmartDouble value)
+        public static explicit operator System.Int64(SmartDouble value)
         {
-            return (Int64)value.m_v;
+            return (System.Int64)value.m_v;
         }
 
         /// <summary>
         /// Converts the value of System.Int64 to SmartDouble explicitly.
         /// </summary>
-        public static implicit operator SmartDouble(Int64 value)
+        public static implicit operator SmartDouble(System.Int64 value)
         {
             return SmartDouble.Parse(value);
         }
@@ -175,33 +199,30 @@ namespace SSTypes
         /// <summary>
         /// Converts the value of SmartDouble to System.Decimal.
         /// </summary>
-        public static explicit operator Decimal(SmartDouble value)
+        public static explicit operator System.Decimal(SmartDouble value)
         {
-            return (Decimal)value.m_v;
+            return (System.Decimal)value.m_v;
         }
 
         /// <summary>
         /// Converts the value of System.Decimal to SmartDouble.
         /// </summary>
-        public static explicit operator SmartDouble(Decimal value)
+        public static explicit operator SmartDouble(System.Decimal value)
         {
-            return new SmartDouble((Double)value);
+            return new SmartDouble((System.Double)value);
         }
 
         /// <summary>
-        /// Parses Decimal and returns SmartDouble.
+        /// Parses System.Decimal and returns SmartDouble.
         /// Returns SmartDouble.BadValue if d is too small or too big.
-        /// Rounds d if d contains fraction part.
         /// Does not throw exception.
         /// </summary>
-        public static SmartDouble Parse(Decimal d)
+        public static SmartDouble Parse(System.Decimal d)
         {
-            Decimal r = Math.Round(d);
-
-            if ((r < (Decimal)MinValue) || ((Decimal)MaxValue < r))
+            if ((d < (System.Decimal)MinValue) || ((System.Decimal)MaxValue < d))
                 return BadValue;
 
-            return (Double)r;
+            return (System.Double)d;
         }
 
         /// <summary>
@@ -214,12 +235,12 @@ namespace SSTypes
             if ((v < MinValue) || (MaxValue < v))
                 return BadValue;
 
-            return (Double)v;
+            return (System.Double)v;
         }
 
         /// <summary>
         /// Parses System.UInt64 and returns SmartDouble.
-        /// Returns SmartDouble.BadValue if v is too small or too big.
+        /// Returns SmartDouble.BadValue if v is too big.
         /// Does not throw exception.
         /// </summary>
         public static SmartDouble Parse(System.UInt64 v)
@@ -227,22 +248,20 @@ namespace SSTypes
             if (MaxValue < v)
                 return BadValue;
 
-            return (Double)v;
+            return (System.Double)v;
         }
 
         /// <summary>
         /// Parses System.Int32 and returns SmartDouble.
-        /// Returns SmartDouble.BadValue if v is too small or too big.
         /// Does not throw exception.
         /// </summary>
         public static SmartDouble Parse(System.Int32 v)
         {
-            return (Double)v;
+            return (System.Double)v;
         }
 
         /// <summary>
         /// Parses System.UInt32 and returns SmartDouble.
-        /// Returns SmartDouble.BadValue if v is too small or too big.
         /// Does not throw exception.
         /// </summary>
         public static SmartDouble Parse(System.UInt32 v)
@@ -256,7 +275,7 @@ namespace SSTypes
         /// </summary>
         public static SmartDouble Parse(System.Int16 v)
         {
-            return (Double)v;
+            return (System.Double)v;
         }
 
         /// <summary>
@@ -265,7 +284,7 @@ namespace SSTypes
         /// </summary>
         public static SmartDouble Parse(System.UInt16 v)
         {
-            return (Double)v;
+            return (System.Double)v;
         }
 
         /// <summary>
@@ -274,7 +293,7 @@ namespace SSTypes
         /// </summary>
         public static SmartDouble Parse(System.SByte v)
         {
-            return (Double)v;
+            return (System.Double)v;
         }
 
         /// <summary>
@@ -283,17 +302,17 @@ namespace SSTypes
         /// </summary>
         public static SmartDouble Parse(System.Byte v)
         {
-            return (Double)v;
+            return (System.Double)v;
         }
 
         /// <summary>
-        /// Parses string and returns SmartDouble.
+        /// Parses System.String and returns SmartDouble.
         /// Does not throw exception.
         /// Returns SmartDouble.BadValue if error.
         /// Control if string is null, cannot parse or contained a too big number.
         /// Considers point and comma as decimal delimeter.
         /// </summary>
-        public static SmartDouble Parse(string s)
+        public static SmartDouble Parse(System.String s)
         {
             if (s == null)
                 return SmartDouble.BadValue;
@@ -302,16 +321,16 @@ namespace SSTypes
         }
 
         /// <summary>
-        /// Parses string from inclusive start position to inclusive end position and returns SmartDouble.
+        /// Parses System.String from inclusive start position to inclusive end position and returns SmartDouble.
         /// Does not throw exception.
         /// Returns SmartDouble.BadValue if error.
         /// Control if string is null, cannot parse or contained a too big number.
-        /// Considers point and comma as decimal delimeter.
+        /// Considers point as decimal delimeter and comma as thousands separator.
         /// </summary>
-        public static SmartDouble Parse(string s, int start, int end)
+        public static SmartDouble Parse(System.String s, int start, int end)
         {
-            UInt32 v1 = 0;
-            UInt32 v2 = 0;
+            System.UInt32 v1 = 0;
+            System.UInt32 v2 = 0;
 
             int digits = 0;
 
@@ -344,7 +363,7 @@ namespace SSTypes
                     if (digits < 9)
                     {
                         v1 = (v1 << 3) + v1 + v1;
-                        v1 += (UInt32)(c - '0');
+                        v1 += (System.UInt32)(c - '0');
                         digits++;
                     }
                     else
@@ -353,7 +372,7 @@ namespace SSTypes
                             return SmartDouble.BadValue;
 
                         v2 = (v2 << 3) + v2 + v2;
-                        v2 += (UInt32)(c - '0');
+                        v2 += (System.UInt32)(c - '0');
                         digits++;
                     }
 
@@ -435,7 +454,7 @@ namespace SSTypes
             }
             else
             {
-                Int64 vv = correction_powers[digits - 9] * v1 + v2;
+                System.Int64 vv = correction_powers[digits - 9] * v1 + v2;
 
                 if (is_negative)
                     return -vv * decimal_powers[pw];
@@ -445,13 +464,13 @@ namespace SSTypes
         }
 
         /// <summary>
-        /// Parses object and returns SmartDouble.
+        /// Parses System.Object and returns SmartDouble.
         /// Does not throw exception.
         /// Returns SmartDouble.BadValue if error.
-        /// Control if string is null, cannot parse or contained a too big number.
-        /// Considers point and comma as decimal delimeter.
+        /// Control if containing value is null, cannot parse or contained a too big number.
+        /// Considers point as decimal delimeter and comma as thousands separator.
         /// </summary>
-        public static SmartDouble Parse(object o)
+        public static SmartDouble Parse(System.Object o)
         {
             if (o == null)
                 return SmartDouble.BadValue;
@@ -459,11 +478,11 @@ namespace SSTypes
             if (o is SmartDouble)
                 return (SmartDouble)o;
 
-            if (o is String)
-                return SmartDouble.Parse((String)o);
+            if (o is System.String)
+                return SmartDouble.Parse((System.String)o);
 
-            if (o is Double)
-                return (Double)o;
+            if (o is System.Double)
+                return (System.Double)o;
 
             if (o is SmartDouble)
                 return (SmartDouble)o;
@@ -474,8 +493,8 @@ namespace SSTypes
             if (o is System.UInt64)
                 return SmartDouble.Parse((System.UInt64)o);
 
-            if (o is Int32)
-                return (Double)(Int32)o;
+            if (o is System.Int32)
+                return (System.Double)(System.Int32)o;
 
             if (o is System.UInt32)
                 return SmartDouble.Parse((System.UInt32)o);
@@ -502,10 +521,10 @@ namespace SSTypes
         ///     negative sign if the value is negative, and a sequence of digits ranging
         ///     from 0 to 9 with no leading zeroes.
         /// </summary>
-        public string ToString(Int32 digits)
+        public string ToString(System.Int32 digits)
         {
-            StringBuilder sb = new StringBuilder(16);
-            ToStringBuilder('.', (Byte)digits, sb);
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(16);
+            ToStringBuilder('.', (System.Byte)digits, sb);
             return sb.ToString();
         }
 
@@ -516,10 +535,10 @@ namespace SSTypes
         ///     negative sign if the value is negative, and a sequence of digits ranging
         ///     from 0 to 9 with no leading zeroes.
         /// </summary>
-        public string ToString(char point, Int32 digits)
+        public string ToString(char point, System.Int32 digits)
         {
-            StringBuilder sb = new StringBuilder(16);
-            ToStringBuilder(point, (Byte)digits, sb);
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(16);
+            ToStringBuilder(point, (System.Byte)digits, sb);
             return sb.ToString();
         }
 
@@ -532,7 +551,7 @@ namespace SSTypes
         /// </summary>
         public string ToString(char point)
         {
-            StringBuilder sb = new StringBuilder(16);
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(16);
             ToStringBuilder(point, 12, sb);
             return sb.ToString();
         }
@@ -546,7 +565,7 @@ namespace SSTypes
         /// </summary>
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder(14);
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(14);
             ToStringBuilder('.', 12, sb);
             return sb.ToString();
         }
@@ -560,7 +579,7 @@ namespace SSTypes
         /// </summary>
         public static string ToStringValue(SmartDouble value)
         {
-            StringBuilder sb = new StringBuilder(14);
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(14);
             SmartDouble.ToStringBuilder(value, '.', 12, sb);
             return sb.ToString();
         }
@@ -572,9 +591,9 @@ namespace SSTypes
         ///     negative sign if the value is negative, and a sequence of digits ranging
         ///     from 0 to 9 with no leading zeroes.
         /// </summary>
-        public void ToStringBuilder(Int32 digits, StringBuilder sb)
+        public void ToStringBuilder(System.Int32 digits, System.Text.StringBuilder sb)
         {
-            ToStringBuilder('.', (Byte)digits, sb);
+            ToStringBuilder('.', (System.Byte)digits, sb);
         }
 
         /// <summary>
@@ -584,9 +603,9 @@ namespace SSTypes
         ///     negative sign if the value is negative, and a sequence of digits ranging
         ///     from 0 to 9 with no leading zeroes.
         /// </summary>
-        public void ToStringBuilder(char point, Int32 digits, StringBuilder sb)
+        public void ToStringBuilder(char point, System.Int32 digits, System.Text.StringBuilder sb)
         {
-            SmartDouble.ToStringBuilder(m_v, point, (Byte)digits, sb);
+            SmartDouble.ToStringBuilder(m_v, point, (System.Byte)digits, sb);
         }
 
         /// <summary>
@@ -596,7 +615,7 @@ namespace SSTypes
         ///     negative sign if the value is negative, and a sequence of digits ranging
         ///     from 0 to 9 with no leading zeroes.
         /// </summary>
-        public void ToStringBuilder(char point, StringBuilder sb)
+        public void ToStringBuilder(char point, System.Text.StringBuilder sb)
         {
             ToStringBuilder(point, 12, sb);
         }
@@ -608,7 +627,7 @@ namespace SSTypes
         ///     negative sign if the value is negative, and a sequence of digits ranging
         ///     from 0 to 9 with no leading zeroes.
         /// </summary>
-        public void ToStringBuilder(StringBuilder sb)
+        public void ToStringBuilder(System.Text.StringBuilder sb)
         {
             ToStringBuilder('.', 12, sb);
         }
@@ -625,22 +644,22 @@ namespace SSTypes
         public unsafe static void ToStringBuilder(
             SmartDouble value,
             char point,
-            Byte ndp,
-            StringBuilder sb
+            System.Byte ndp,
+            System.Text.StringBuilder sb
             )
         {
-            SByte round_pos;
+            System.SByte round_pos;
 
-            Int32 sb_initial_length = sb.Length;
+            System.Int32 sb_initial_length = sb.Length;
 
             if (ndp > 16)
                 round_pos = 16;
             else
-                round_pos = (SByte)ndp;
+                round_pos = (System.SByte)ndp;
 
-            SByte alen2 = (SByte)kaa2d.Length;
+            System.SByte alen2 = (System.SByte)kaa2d.Length;
 
-            Byte* aar = stackalloc Byte[alen2];
+            System.Byte* aar = stackalloc System.Byte[alen2];
 
             if (value > MaxValue)
             {
@@ -673,7 +692,7 @@ namespace SSTypes
                 }
             }
 
-            SByte pos = 0;
+            System.SByte pos = 0;
 
             // Leading Zeros
             while ((pos < alen2) && (d1 < kaa2d[pos][1]))
@@ -682,9 +701,9 @@ namespace SSTypes
                 pos++;
             }
 
-            const SByte point_pos = 17;
+            const System.SByte point_pos = 17;
 
-            SByte start_pos;
+            System.SByte start_pos;
             if (pos >= point_pos)
                 start_pos = point_pos;
             else
@@ -693,36 +712,54 @@ namespace SSTypes
             // Digits
             while (pos < kaa2d.Length)
             {
-                // Should be optimized
-                if ( (0 <= d1) && (d1 < kaa2d[pos][1]))
-                    aar[pos] = 0;
-                else
-                    if ((kaa2d[pos][1] <= d1) && (d1 < kaa2d[pos][2]))
-                        aar[pos] = 1;
-                    else
-                        if ((kaa2d[pos][2] <= d1) && (d1 < kaa2d[pos][3]))
-                            aar[pos] = 2;
-                        else
-                            if ((kaa2d[pos][3] <= d1) && (d1 < kaa2d[pos][4]))
-                                aar[pos] = 3;
+                if (d1 < kaa2d[pos][5])
+                {
+                    if (d1 < kaa2d[pos][3])
+                    {
+                        if (d1 < kaa2d[pos][2])
+                        {
+                            if (d1 < kaa2d[pos][1])
+                                aar[pos] = 0;
                             else
-                                if ((kaa2d[pos][4] <= d1) && (d1 < kaa2d[pos][5]))
-                                    aar[pos] = 4;
-                                else
-                                    if ((kaa2d[pos][5] <= d1) && (d1 < kaa2d[pos][6]))
-                                        aar[pos] = 5;
-                                    else
-                                        if ((kaa2d[pos][6] <= d1) && (d1 < kaa2d[pos][7]))
-                                            aar[pos] = 6;
-                                        else
-                                            if ((kaa2d[pos][7] <= d1) && (d1 < kaa2d[pos][8]))
-                                                aar[pos] = 7;
-                                            else
-                                                if ((kaa2d[pos][8] <= d1) && (d1 < kaa2d[pos][9]))
-                                                    aar[pos] = 8;
-                                                else
-                                                    if ((kaa2d[pos][9] <= d1) && (d1 < kaa2d[pos][10]))
-                                                        aar[pos] = 9;
+                                aar[pos] = 1;
+                        }
+                        else
+                        {
+                            aar[pos] = 2;
+                        }
+                    }
+                    else
+                    {
+                        if (d1 < kaa2d[pos][4])
+                            aar[pos] = 3;
+                        else
+                            aar[pos] = 4;
+                    }
+                }
+                else
+                {
+                    if (d1 < kaa2d[pos][8])
+                    {
+                        if (d1 < kaa2d[pos][7])
+                        {
+                            if (d1 < kaa2d[pos][6])
+                                aar[pos] = 5;
+                            else
+                                aar[pos] = 6;
+                        }
+                        else
+                        {
+                            aar[pos] = 7;
+                        }
+                    }
+                    else
+                    {
+                        if (d1 < kaa2d[pos][9])
+                            aar[pos] = 8;
+                        else
+                            aar[pos] = 9;
+                    }
+                }
 
                 d1 -= kaa2d[pos][aar[pos]];
 
@@ -791,7 +828,7 @@ namespace SSTypes
             if (start_pos == point_pos)
                 sb.Append('0');
 
-            SByte stop_pos = pos;
+            System.SByte stop_pos = pos;
 
             pos = start_pos;
             while ((pos <= stop_pos) && (pos > 0))
@@ -809,6 +846,58 @@ namespace SSTypes
 
             return;
         }
-    }
 
+        // IEquatable
+        public int CompareTo(SmartDouble other)
+        {
+            if (m_v < other) return -1;
+            if (m_v > other) return 1;
+            return 0;
+        }
+
+        // IEquatable
+        public bool Equals(SmartDouble other)
+        {
+            return m_v == other.m_v;
+        }
+
+        public override bool Equals(System.Object obj)
+        {
+            if (!(obj is SmartDouble))
+                return false;
+
+            return m_v == ((SmartDouble)obj).m_v;
+        }
+
+        public override int GetHashCode()
+        {
+            return m_v.GetHashCode();
+        }
+
+        // IComparable
+        public int CompareTo(System.Object obj)
+        {
+            if (obj == null)
+                return 1;
+
+            if (obj is SmartDouble)
+            {
+                System.Double d = (SmartDouble)obj;
+                if (m_v < d) return -1;
+                if (m_v > d) return 1;
+                return 0;
+            }
+
+            SmartDouble v2 = SmartDouble.Parse(obj);
+
+            if (!v2.isBad())
+            {
+                if (m_v < v2) return -1;
+                if (m_v > v2) return 1;
+                return 0;
+            }
+
+            throw new System.ArgumentException("Type must be compatible with SSTypes.SmartDouble");
+        }
+    }
 }

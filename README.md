@@ -1,5 +1,8 @@
 **Simple Smart Types** is a library enriching functionality of native types
 
+**Links:**
+[NuGet](https://www.nuget.org/packages/SSTypesLT.dll)
+
 **Summary**
 
 * Contains SmartInt and SmartDouble types enriching native types int and double
@@ -10,12 +13,12 @@
 
 ## Content
 
-* [SSTypesLT](#SSTypesLT)
-* [Performance](#Performance)
-* [Durability](#Durability)
-* [Practical Implementation](#Practical Implementation)
+* [SSTypesLT](#sstypeslt)
+* [Performance](#performance)
+* [Durability](#durability)
+* [Practical Implementation](#practical-implementation)
 
-## SSTypesLT Solution
+## SSTypesLT
 
 SSTypesLT is C# solution with tests and examples.
 

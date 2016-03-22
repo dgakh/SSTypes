@@ -1,7 +1,7 @@
 ﻿/**********************************************************************************
 
 Simple Smart Types Lite
-------------------
+-----------------------
 
 The MIT License (MIT)
 
@@ -29,43 +29,39 @@ SOFTWARE.
 
 namespace SSTypes
 {
-    using System;
-    using System.Runtime.InteropServices;
-    using System.Text;
-
     /// <summary>
-    /// Used for quick and save operations with int type.
-    /// Compatible with int and can be used whenever int uses.
+    /// Used for quick and save operations with System.Int32 type.
+    /// Compatible with System.Int32 and can be used whenever System.Int32 used.
     /// </summary>
-    [Serializable, System.Runtime.InteropServices.StructLayout(LayoutKind.Sequential)]
+    [System.Serializable, System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
     [System.Runtime.InteropServices.ComVisible(true)]
-    public struct SmartInt : IComparable, IComparable<SmartInt>, IEquatable<SmartInt>
+    public struct SmartInt : System.IComparable, System.IComparable<SmartInt>, System.IEquatable<SmartInt>
     {
-        private Int32 m_v;
+        private System.Int32 m_v;
 
         /// <summary>
         /// Bad value represented absent data, wrong data, e.t.c.
         /// </summary>
-        public static readonly SmartInt BadValue = Int32.MinValue;
+        public static readonly SmartInt BadValue = System.Int32.MinValue;
 
         /// <summary>
         /// Maximal valid value (2147483647)
         /// </summary>
-        public static readonly SmartInt MaxValue = Int32.MaxValue;
+        public static readonly SmartInt MaxValue = System.Int32.MaxValue;
 
         /// <summary>
         /// Minimal valid value (-2147483647)
         /// </summary>
-        public static readonly SmartInt MinValue = Int32.MinValue + 1;
+        public static readonly SmartInt MinValue = System.Int32.MinValue + 1;
 
         // Private constants
         // Used internally to control possible overloading.
-        private static readonly Int32 max_predparse_value = ((Int32.MaxValue - 1) / 10);
+        private static readonly System.Int32 max_predparse_value = ((System.Int32.MaxValue - 1) / 10);
 
         /// <summary>
-        /// Construct SmartInt from int.
+        /// Construct SmartInt from System.Int32.
         /// </summary>
-        public SmartInt(Int32 value)
+        public SmartInt(System.Int32 value)
         {
             m_v = value;
         }
@@ -87,20 +83,37 @@ namespace SSTypes
         }
 
         /// <summary>
-        /// Converts the value of int to SmartInt.
+        /// Converts the value of System.Int32 to SmartInt.
         /// </summary>
-        public static implicit operator SmartInt(Int32 value)
+        public static implicit operator SmartInt(System.Int32 value)
         {
             return new SmartInt(value);
         }
 
         /// <summary>
-        /// Converts the value of SmartInt to int.
+        /// Converts the value of SmartInt to System.Int32.
         /// </summary>
-        public static implicit operator Int32(SmartInt value)
+        public static implicit operator System.Int32(SmartInt value)
         {
             return value.m_v;
         }
+
+        /// <summary>
+        /// Converts the value of System.Int16 to SmartInt.
+        /// </summary>
+        public static implicit operator SmartInt(System.Int16 value)
+        {
+            return new SmartInt(value);
+        }
+
+        /// <summary>
+        /// Converts the value of SmartInt to System.Int16.
+        /// </summary>
+        public static explicit operator System.Int16(SmartInt value)
+        {
+            return (System.Int16)value.m_v;
+        }
+
 
         /*
         - Is not useful because compiler can assign SmartInt to Int64
@@ -117,7 +130,7 @@ namespace SSTypes
         /// <summary>
         /// Converts the value of System.Int64 to SmartInt explicitly.
         /// </summary>
-        public static explicit operator SmartInt(Int64 value)
+        public static explicit operator SmartInt(System.Int64 value)
         {
             return SmartInt.Parse(value);
         }
@@ -137,7 +150,7 @@ namespace SSTypes
         /// <summary>
         /// Converts the value of System.Double to SmartInt.
         /// </summary>
-        public static explicit operator SmartInt(Double value)
+        public static explicit operator SmartInt(System.Double value)
         {
             return SmartInt.Parse(value);
         }
@@ -165,7 +178,7 @@ namespace SSTypes
         /// <summary>
         /// Converts the value of System.Decimal to SmartInt.
         /// </summary>
-        public static explicit operator SmartInt(Decimal value)
+        public static explicit operator SmartInt(System.Decimal value)
         {
             if (value < SmartInt.MinValue)
                 return SmartInt.BadValue;
@@ -173,7 +186,7 @@ namespace SSTypes
             if (SmartInt.MaxValue < value)
                 return SmartInt.BadValue;
 
-            return new SmartInt((Int32)value);
+            return new SmartInt((System.Int32)value);
         }
 
         /// <summary>
@@ -183,15 +196,15 @@ namespace SSTypes
         /// Returns SmartInt.BadValue if error.
         /// Control if string is null, empty, cannot parse or contained a too long number.
         /// </summary>
-        public static SmartInt ParseBinary(string b)
+        public static SmartInt ParseBinary(System.String b)
         {
             if (b == null)
                 return SmartInt.BadValue;
 
-            Int32 l = b.Length;
+            System.Int32 l = b.Length;
 
-            Int32 number = 0;
-            Int32 mr = 1;
+            System.Int32 number = 0;
+            System.Int32 mr = 1;
 
             int i = l;
 
@@ -214,12 +227,12 @@ namespace SSTypes
         }
 
         /// <summary>
-        /// Parses string and returns SmartInt.
+        /// Parses System.String and returns SmartInt.
         /// Does not throw exception.
         /// Returns SmartInt.BadValue if error.
         /// Control if string is null, cannot parse or contained a too big number.
         /// </summary>
-        public static SmartInt Parse(string s)
+        public static SmartInt Parse(System.String s)
         {
             if (s != null)
                 return SmartInt.Parse(s, 0, s.Length - 1);
@@ -228,12 +241,12 @@ namespace SSTypes
         }
 
         /// <summary>
-        /// Parses string from inclusive start position to inclusive end position and returns SmartInt.
+        /// Parses System.String from inclusive start position to inclusive end position and returns SmartInt.
         /// Does not throw exception.
         /// Returns SmartInt.BadValue if error.
         /// Control if string is null, cannot parse or contained a too big number.
         /// </summary>
-        public static SmartInt Parse(string s, int start, int end)
+        public static SmartInt Parse(System.String s, int start, int end)
         {
             if (s == null)
                 return SmartInt.BadValue;
@@ -243,7 +256,7 @@ namespace SSTypes
             if (end2 > s.Length)
                 return SmartInt.BadValue;
 
-            Int32 number = 0;
+            System.Int32 number = 0;
 
             bool is_negative = false;
             bool is_positive = false;
@@ -262,7 +275,7 @@ namespace SSTypes
 
                     // number *= 10;
                     number = (number << 3) + number + number;
-                    number += (Int32)(c - '0');
+                    number += (System.Int32)(c - '0');
 
                     is_empty = false;
 
@@ -325,41 +338,41 @@ namespace SSTypes
         }
 
         /// <summary>
-        /// Parses Double and returns SmartInt.
+        /// Parses System.Double and returns SmartInt.
         /// Returns SmartInt.BadValue if d is too small or too big.
-        /// Rounds d if d contains fraction part.
+        /// Rounds d.
         /// Does not throw exception.
         /// </summary>
-        public static SmartInt Parse(Double d)
+        public static SmartInt Parse(System.Double d)
         {
-            double r = Math.Round(d);
+            double r = System.Math.Round(d);
 
             if ((r < MinValue) || (MaxValue < r))
                 return BadValue;
 
-            return (Int32)r;
+            return (System.Int32)r;
         }
 
         /// <summary>
         /// Parses Decimal and returns SmartInt.
         /// Returns SmartInt.BadValue if d is too small or too big.
-        /// Rounds d if d contains fraction part.
+        /// Rounds d.
         /// Does not throw exception.
         /// </summary>
-        public static SmartInt Parse(Decimal d)
+        public static SmartInt Parse(System.Decimal d)
         {
-            Decimal r = Math.Round(d);
+            System.Decimal r = System.Math.Round(d);
 
             if ((r < MinValue) || (MaxValue < r))
                 return BadValue;
 
-            return (Int32)r;
+            return (System.Int32)r;
         }
 
         /// <summary>
         /// Parses SmartDouble and returns SmartInt.
-        /// Returns SmartInt.BadValue if d is too small or too big.
-        /// Rounds d if d contains fraction part.
+        /// Returns SmartInt.BadValue if d is BadValue.
+        /// Rounds d.
         /// Does not throw exception.
         /// </summary>
         public static SmartInt Parse(SmartDouble d)
@@ -367,7 +380,7 @@ namespace SSTypes
             if (d.isBad())
                 return SmartInt.BadValue;
 
-            return Parse((Double)d);
+            return Parse((System.Double)d);
         }
 
         /// <summary>
@@ -380,12 +393,12 @@ namespace SSTypes
             if ((v < MinValue) || (MaxValue < v))
                 return BadValue;
 
-            return (Int32)v;
+            return (System.Int32)v;
         }
 
         /// <summary>
         /// Parses System.UInt64 and returns SmartInt.
-        /// Returns SmartInt.BadValue if v is too small or too big.
+        /// Returns SmartInt.BadValue if v is too big.
         /// Does not throw exception.
         /// </summary>
         public static SmartInt Parse(System.UInt64 v)
@@ -393,25 +406,12 @@ namespace SSTypes
             if ((System.UInt64)(System.Int64)MaxValue < v)
                 return BadValue;
 
-            return (Int32)v;
-        }
-
-        /// <summary>
-        /// Parses System.Int32 and returns SmartInt.
-        /// Returns SmartInt.BadValue if v is too small or too big.
-        /// Does not throw exception.
-        /// </summary>
-        public static SmartInt Parse(System.Int32 v)
-        {
-            if ((v < MinValue) || (MaxValue < v))
-                return BadValue;
-
-            return (Int32)v;
+            return (System.Int32)v;
         }
 
         /// <summary>
         /// Parses System.UInt32 and returns SmartInt.
-        /// Returns SmartInt.BadValue if v is too small or too big.
+        /// Returns SmartInt.BadValue if v is too big.
         /// Does not throw exception.
         /// </summary>
         public static SmartInt Parse(System.UInt32 v)
@@ -419,51 +419,15 @@ namespace SSTypes
             if (MaxValue < v)
                 return BadValue;
 
-            return (Int32)v;
+            return (System.Int32)v;
         }
 
         /// <summary>
-        /// Parses System.Int16 and returns SmartInt.
+        /// Parses System.Object and returns SmartInt.
+        /// Returns SmartInt.BadValue if value of o is null, is too small or too large.
         /// Does not throw exception.
         /// </summary>
-        public static SmartInt Parse(System.Int16 v)
-        {
-            return (Int32)v;
-        }
-
-        /// <summary>
-        /// Parses System.UInt16 and returns SmartInt.
-        /// Does not throw exception.
-        /// </summary>
-        public static SmartInt Parse(System.UInt16 v)
-        {
-            return (Int32)v;
-        }
-
-        /// <summary>
-        /// Parses System.SByte and returns SmartInt.
-        /// Does not throw exception.
-        /// </summary>
-        public static SmartInt Parse(System.SByte v)
-        {
-            return (Int32)v;
-        }
-
-        /// <summary>
-        /// Parses System.Byte and returns SmartInt.
-        /// Does not throw exception.
-        /// </summary>
-        public static SmartInt Parse(System.Byte v)
-        {
-            return (Int32)v;
-        }
-
-        /// <summary>
-        /// Parses object and returns SmartInt.
-        /// Returns SmartInt.BadValue if o is null, is too small or too large.
-        /// Does not throw exception.
-        /// </summary>
-        public static SmartInt Parse(object o)
+        public static SmartInt Parse(System.Object o)
         {
             if (o == null)
                 return SmartInt.BadValue;
@@ -471,11 +435,11 @@ namespace SSTypes
             if (o is SmartInt)
                 return (SmartInt)o;
 
-            if (o is String)
-                return SmartInt.Parse((String)o);
+            if (o is System.String)
+                return SmartInt.Parse((System.String)o);
 
-            if (o is Double)
-                return SmartInt.Parse((Double)o);
+            if (o is System.Double)
+                return SmartInt.Parse((System.Double)o);
 
             if (o is SmartDouble)
                 return SmartInt.Parse((SmartDouble)o);
@@ -486,8 +450,8 @@ namespace SSTypes
             if (o is System.UInt64)
                 return SmartInt.Parse((System.UInt64)o);
 
-            if (o is Int32)
-                return new SmartInt((Int32)o);
+            if (o is System.Int32)
+                return new SmartInt((System.Int32)o);
 
             if (o is System.UInt32)
                 return SmartInt.Parse((System.UInt32)o);
@@ -508,18 +472,18 @@ namespace SSTypes
         }
 
         /// <summary>
-        /// Parses object and returns SmartInt.
+        /// Parses System.Object and returns SmartInt.
         /// For some cases is more effective than Parse(object o).
         /// Returns SmartInt.BadValue if o is null, is negative or too large.
         /// Does not throw exception.
         /// </summary>
-        public static SmartInt ParsePositive(object o)
+        public static SmartInt ParsePositive(System.Object o)
         {
             if (o == null)
                 return SmartInt.BadValue;
 
-            if (o is String)
-                return SmartInt.ParsePositive((String)o);
+            if (o is System.String)
+                return SmartInt.ParsePositive((System.String)o);
 
             SmartInt si = Parse(o);
 
@@ -538,7 +502,7 @@ namespace SSTypes
         /// </summary>
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder(12);
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(12);
             SmartInt.ToStringBuilder(m_v, 0, sb);
             return sb.ToString();
         }
@@ -553,7 +517,7 @@ namespace SSTypes
         /// </summary>
         public static string ToStringValue(SmartInt value)
         {
-            StringBuilder sb = new StringBuilder(12);
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(12);
             SmartInt.ToStringBuilder(value, 0, sb);
             return sb.ToString();
         }
@@ -566,7 +530,7 @@ namespace SSTypes
         ///     negative sign if the value is negative, and a sequence of digits ranging
         ///     from 0 to 9 with no leading zeroes.
         /// </summary>
-        public string ToString(string format)
+        public string ToString(System.String format)
         {
             if (isBad())
                 return "BadValue";
@@ -583,7 +547,7 @@ namespace SSTypes
         /// </summary>
         public string ToString(int digits)
         {
-            StringBuilder sb = new StringBuilder(12);
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(12);
             SmartInt.ToStringBuilder(m_v, digits, sb);
             return sb.ToString();
         }
@@ -596,7 +560,7 @@ namespace SSTypes
         ///     negative sign if the value is negative, and a sequence of digits ranging
         ///     from 0 to 9 with no leading zeroes.
         /// </summary>
-        public void ToStringBuilder(StringBuilder sb)
+        public void ToStringBuilder(System.Text.StringBuilder sb)
         {
             SmartInt.ToStringBuilder(m_v, 0, sb);
         }
@@ -609,7 +573,7 @@ namespace SSTypes
         ///     negative sign if the value is negative, and a sequence of digits ranging
         ///     from 0 to 9 with no leading zeroes.
         /// </summary>
-        public void ToStringBuilder(StringBuilder sb, int digits)
+        public void ToStringBuilder(System.Text.StringBuilder sb, int digits)
         {
             SmartInt.ToStringBuilder(m_v, digits, sb);
         }
@@ -621,10 +585,7 @@ namespace SSTypes
         ///     negative sign if the value is negative, and a sequence of digits ranging
         ///     from 0 to 9 with no leading zeroes.
         /// </summary>
-        public static void ToStringBuilder(
-            SmartInt value,
-            StringBuilder sb
-            )
+        public static void ToStringBuilder(SmartInt value, System.Text.StringBuilder sb)
         {
             SmartInt.ToStringBuilder(value, 0, sb);
         }
@@ -638,8 +599,8 @@ namespace SSTypes
         /// </summary>
         public unsafe static void ToStringBuilder(
             SmartInt value,
-            Int32 ndp,
-            StringBuilder sb
+            System.Int32 ndp,
+            System.Text.StringBuilder sb
             )
         {
             if (value == SmartInt.BadValue)
@@ -655,12 +616,12 @@ namespace SSTypes
             }
 
             // 12345678911
-            Char* buffer = stackalloc Char[10];
+            System.Char* buffer = stackalloc System.Char[10];
 
-            Int32 vzero = (Int32)'0';
-            Int32 v1;
-            Int32 v2;
-            Int32 ndigits = 10;
+            System.Int32 vzero = (System.Int32)'0';
+            System.Int32 v1;
+            System.Int32 v2;
+            System.Int32 ndigits = 10;
 
             if (value < 0)
             {
@@ -677,7 +638,7 @@ namespace SSTypes
 
                 v2 = v1 / 10;
 
-                buffer[i] = (Char)(vzero + v1 - (v2 << 3) - v2 - v2);
+                buffer[i] = (System.Char)(vzero + v1 - (v2 << 3) - v2 - v2);
 
                 v1 = v2;
             }
@@ -712,7 +673,7 @@ namespace SSTypes
             return m_v == other.m_v;
         }
 
-        public override bool Equals(Object obj)
+        public override bool Equals(System.Object obj)
         {
             if (!(obj is SmartInt))
                 return false;
@@ -726,7 +687,7 @@ namespace SSTypes
         }
 
         // IComparable
-        public int CompareTo(Object obj)
+        public int CompareTo(System.Object obj)
         {
             if (obj == null)
                 return 1;
@@ -752,9 +713,7 @@ namespace SSTypes
                 return 0;
             }
 
-            throw new ArgumentException("Type must be compatible with SSTypes.SmartInt");
+            throw new System.ArgumentException("Type must be compatible with SSTypes.SmartInt");
         }
-
     }
-
 }
