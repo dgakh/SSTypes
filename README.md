@@ -1,7 +1,7 @@
 **Simple Smart Types** is a library enriching functionality of native types
 
 **Links:**
-[NuGet](https://www.nuget.org/packages/SSTypesLT.dll)
+[NuGet](https://www.nuget.org/packages/SSTypesLT.dll), 
 [PerfDotNet](https://github.com/PerfDotNet)
 
 
@@ -35,7 +35,8 @@ The significant performance gain was achieved for string parse operations. ToStr
 
 Performance was measured by PerfDotNet. See [PerfDotNet](https://github.com/PerfDotNet) for details.
 
-### Test environment for the tests performed
+** Test environment for the tests performed **
+
 ```ini
 BenchmarkDotNet=v0.9.1.0
 OS=Microsoft Windows NT 6.1.7601 Service Pack 1
@@ -45,7 +46,7 @@ HostCLR=MS.NET 4.0.30319.42000, Arch=64-bit RELEASE [RyuJIT]
 
 ```
 
-### String Parse for Double and SmartDouble
+** String Parse for Double and SmartDouble **
 
             Method |        Median |     StdDev |
 ------------------ |-------------- |----------- |
@@ -53,13 +54,12 @@ HostCLR=MS.NET 4.0.30319.42000, Arch=64-bit RELEASE [RyuJIT]
  Parse_SmartDouble |   576.6582 us |  9.8574 us |
 
 
-### String Parse for 9-digit Int32 and SmartInt numbers
+** String Parse for 9-digit Int32 and SmartInt numbers **
 
                  Method |     Median |    StdDev |
 ----------------------- |----------- |---------- |
       Parse_Int_9_Digit | 16.3008 ms | 0.2596 ms |
  Parse_SmartInt_9_Digit |  3.4532 ms | 0.0471 ms |
-
 
 
 ## Durability
