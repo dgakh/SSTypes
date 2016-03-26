@@ -18,8 +18,8 @@ PM> Install-Package SSTypesLT.dll
 Compile and run in Release mode to get rigth measurements.
 
 Links:
-SSTypesLT.dll:
-https://www.nuget.org/packages/SSTypesLT.dll
+SSTypesLT NuGet package:
+https://www.nuget.org/packages/SSTypesLT
 
 SSTypesLT on GitHub:
 https://github.com/dgakh/SSTypes

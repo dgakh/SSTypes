@@ -95,7 +95,12 @@ namespace SSTypes
         {
             return m_v < 0;
         }
-
+/*
+        public static SmartInt operator +(SmartInt c1, SmartInt c2)
+        {
+            return new SmartInt(c1.m_v + c2.m_v);
+        }
+*/
         /// <summary>
         /// Converts the value of System.Int32 to SmartInt.
         /// </summary>
@@ -118,7 +123,7 @@ namespace SSTypes
         /// </summary>
         public static implicit operator SmartInt(System.Int32? value)
         {
-            return new SmartInt(value.Value);
+            return new SmartInt(value);
         }
 
         /// <summary>
