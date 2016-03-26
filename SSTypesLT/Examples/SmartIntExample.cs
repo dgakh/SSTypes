@@ -60,9 +60,6 @@ namespace Examples
         }
 
 
-
-
-
         /// <summary>
         /// Implicit conversion between SmartInt and System.Byte.
         /// </summary>
@@ -335,8 +332,139 @@ namespace Examples
                 Console.WriteLine();
             }
         }
+        
+        /// <summary>
+        /// Compare sizes of arrays of int, int?s and SmartInt
+        /// </summary>
+        public static void ArraySize()
+        {
+            int objects_count = 1000;
+
+            long memory1 = GC.GetTotalMemory(true);
+            int[] ai = new int[objects_count];
+            long memory2 = GC.GetTotalMemory(true);
+            int?[] ani = new int?[objects_count];
+            long memory3 = GC.GetTotalMemory(true);
+            SmartInt[] asi = new SmartInt[objects_count];
+            long memory4 = GC.GetTotalMemory(true);
+
+            // Compiler can optimize and do not allocate arrays if they are not used
+            // So we write their lengths
+            Console.WriteLine("Array sizes {0}, {1}, {2}", ai.Length, ani.Length, asi.Length);
+            Console.WriteLine("Memory for int \t {0}", memory2 - memory1);
+            Console.WriteLine("Memory for int? \t {0}", memory3 - memory2);
+            Console.WriteLine("Memory for SmartInt \t {0}", memory4 - memory3);
+        }
+
+        /// <summary>
+        /// Compare times of addition of int, int?s and SmartInt
+        /// </summary>
+        public static void OperationsAdd()
+        {
+            MemPerfStatus mps_Int = new MemPerfStatus(true);
+            MemPerfStatus mps_IntN = new MemPerfStatus(true);
+            MemPerfStatus mps_SmartInt = new MemPerfStatus(true);
+
+            SmartIntBM_SimpleOperations tt = new SmartIntBM_SimpleOperations();
+
+            // Warmup
+            tt.Additions_Int();
+
+            mps_Int.Start();
+
+            for (var i = 0; i < 10; i++)
+                tt.Additions_Int();
+
+            mps_Int.Stop();
+
+            // Warmup
+            tt.Additions_IntN();
+
+            mps_IntN.Start();
+
+            for (var i = 0; i < 10; i++)
+                tt.Additions_IntN();
+
+            mps_IntN.Stop();
 
 
+            // Warmup
+            tt.Additions_SmartInt();
+
+            mps_SmartInt.Start();
+
+            for (var i = 0; i < 10; i++)
+                tt.Additions_SmartInt();
+
+            mps_SmartInt.Stop();
+
+            mps_Int.Report("Int     ");
+            mps_Int.Report("Int?    ");
+            mps_SmartInt.Report("SmartInt");
+        }
+
+
+    }
+
+    public class SmartIntBM_SimpleOperations
+    {
+        int cycles = 10000000;
+        int count = 10;
+
+        public SmartIntBM_SimpleOperations()
+        {
+        }
+
+        public SSTypes.SmartInt Additions_SmartInt()
+        {
+            SSTypes.SmartInt s = 0;
+            SSTypes.SmartInt d = 7;
+
+            for (var cc = 0; cc < cycles; cc++)
+            {
+                s = 0;
+                d = 7;
+
+                for (var i = 0; i < count; i++)
+                    s += d;
+            }
+
+            return s;
+        }
+
+        public System.Int32 Additions_Int()
+        {
+            System.Int32 s = 0;
+            System.Int32 d = 7;
+
+            for (var cc = 0; cc < cycles; cc++)
+            {
+                s = 0;
+                d = 7;
+
+                for (var i = 0; i < count; i++)
+                    s += d;
+            }
+
+            return s;
+        }
+
+        public System.Int32? Additions_IntN()
+        {
+            System.Int32? s = 0;
+            System.Int32? d = 7;
+
+            for (var cc = 0; cc < cycles; cc++)
+            {
+                s = 0;
+                d = 7;
+
+                for (var i = 0; i < count; i++)
+                    s += d;
+            }
+
+            return s;
+        }
 
     }
 

@@ -227,6 +227,53 @@ namespace UnitTests
             Assert.AreEqual("-123", (new SmartInt(-123)).ToString(), "Parsing \"-123\"");
             Assert.AreEqual("-123456789", (new SmartInt(-123456789)).ToString(), "Parsing \"-123456789\"");
         }
+
+        [TestMethod]
+        public void Test_SmartInt_Parse_BruteForce()
+        {
+            int test_count = 10000000;
+            Random rnd = new Random();
+
+            for (int i = 0; i < test_count; i++)
+            {
+                int v = rnd.Next();
+
+                string s = v.ToString();
+                string sp = "+" + s;
+                string sn = "-" + s;
+
+                SmartInt siv = SmartInt.Parse(s);
+                SmartInt sipv = SmartInt.Parse(sp);
+                SmartInt sinv = SmartInt.Parse(sn);
+
+                Assert.IsTrue( (siv == v) && (sipv == v) && (sinv == -v), "Parsing " + v.ToString());
+            }
+        }
+
+        [TestMethod]
+        public void Test_SmartInt_ToString_BruteForce()
+        {
+            int test_count = 10000000;
+            Random rnd = new Random();
+
+            for (int i = 0; i < test_count; i++)
+            {
+                int v = rnd.Next();
+                int vn = -v;
+
+                string s = v.ToString();
+                string sn = vn.ToString();
+
+                SmartInt siv = v;
+                SmartInt sivn = vn;
+
+                string sis = siv.ToString();
+                string sisn = sivn.ToString();
+
+                Assert.IsTrue((sis == s) && (sisn == sn), "ToString " + v.ToString());
+            }
+        }
+
     }
 
 }

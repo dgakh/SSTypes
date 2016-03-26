@@ -1,6 +1,7 @@
 ﻿/**********************************************************************************
 
 Examples
+https://github.com/dgakh/SSTypes
 --------
 
 The MIT License (MIT)
@@ -31,13 +32,17 @@ namespace Examples
 {
     using System;
 
+
     class Program
     {
         static void Main(string[] args)
         {
             // Uncomment example you want to run
 
-            CleanStringParse.RunTest(args);
+            //CleanStringParse.RunTest(args);
+
+            SmartIntExample.OperationsAdd();
+            //SmartIntExample.ArraySize();
 
             //SmartIntExample.AssignmentByte();
             //SmartIntExample.AssignmentSingle();
