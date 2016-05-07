@@ -30,6 +30,8 @@ SOFTWARE.
 
 namespace SSTypes
 {
+    using System;
+
     /// <summary>
     /// Used for quick and save operations with System.Double type.
     /// 
@@ -43,7 +45,7 @@ namespace SSTypes
     /// </summary>
     [System.Serializable, System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
     [System.Runtime.InteropServices.ComVisible(true)]
-    public struct SmartDouble : System.IComparable, System.IComparable<SmartDouble>, System.IEquatable<SmartDouble>
+    public struct SmartDouble : System.IComparable, System.IFormattable, System.IConvertible, System.IComparable<SmartDouble>, System.IEquatable<SmartDouble>
     {
         private System.Double m_v;
 
@@ -128,6 +130,17 @@ namespace SSTypes
         }
 
         /// <summary>
+        /// Construct SmartDouble from System.Double.
+        /// </summary>
+        public SmartDouble(System.Double? value)
+        {
+            if (value.HasValue)
+                m_v = value.Value;
+            else
+                m_v = BadValue.m_v;
+        }
+
+        /// <summary>
         /// Construct SmartDouble from System.Single.
         /// </summary>
         private SmartDouble(System.Single value)
@@ -161,6 +174,54 @@ namespace SSTypes
         public static implicit operator System.Double(SmartDouble value)
         {
             return value.m_v;
+        }
+
+        /// <summary>
+        /// Converts the value of System.Double? to SmartDouble.
+        /// Nullable compatibility support.
+        /// </summary>
+        public static implicit operator SmartDouble(System.Double? value)
+        {
+            return new SmartDouble(value);
+        }
+
+        /// <summary>
+        /// Converts the value of SmartDouble to System.Double?.
+        /// Nullable compatibility support.
+        /// </summary>
+        public static implicit operator System.Double? (SmartDouble value)
+        {
+            if (value.isBad())
+                return null;
+
+            return new System.Double?(value.m_v);
+        }
+
+        // Nullable compatibility support.
+        public bool HasValue
+        {
+            get
+            {
+                return !isBad();
+            }
+        }
+
+        // Nullable compatibility support.
+        public SmartDouble Value
+        {
+            get
+            {
+                if (!HasValue)
+                    throw new System.InvalidOperationException("SmartDouble must have a value.");
+                else
+                    return this;
+            }
+        }
+
+        // Nullable compatibility support.
+        public SmartDouble GetValueOrDefault()
+        {
+            return HasValue ? this : default(SmartDouble);
         }
 
         /// <summary>
@@ -407,13 +468,13 @@ namespace SSTypes
                     pos++;
                     continue;
                 }
-                /*
-                                if (c == th_digital)
-                                {
-                                    pos++;
-                                    continue;
-                                }
-                */
+/*
+                if (c == th_digital)
+                {
+                    pos++;
+                    continue;
+                }
+*/
                 if (c == ' ')
                 {
                     if (pos == start)
@@ -735,7 +796,7 @@ namespace SSTypes
         /// (if ndp > 16 then ndp = 16)</param>
         public static void ToStringBuilder(
             System.Text.StringBuilder sb,
-            double value,
+            double value, 
             byte ndp
             )
         {
@@ -1195,6 +1256,101 @@ namespace SSTypes
             throw new System.ArgumentException("Type must be compatible with SSTypes.SmartDouble");
         }
 
+        public Type GetType()
+        {
+            return m_v.GetType();
+        }
+
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            return m_v.ToString(format, formatProvider);
+        }
+
+        public TypeCode GetTypeCode()
+        {
+            return TypeCode.Double;
+        }
+
+        public bool ToBoolean(IFormatProvider provider)
+        {
+            return Convert.ToBoolean(m_v);
+        }
+
+        public char ToChar(IFormatProvider provider)
+        {
+            return Convert.ToChar(m_v);
+        }
+
+        public sbyte ToSByte(IFormatProvider provider)
+        {
+            return Convert.ToSByte(m_v);
+        }
+
+        public byte ToByte(IFormatProvider provider)
+        {
+            return Convert.ToByte(m_v);
+        }
+
+        public short ToInt16(IFormatProvider provider)
+        {
+            return Convert.ToInt16(m_v);
+        }
+
+        public ushort ToUInt16(IFormatProvider provider)
+        {
+            return Convert.ToUInt16(m_v);
+        }
+
+        public int ToInt32(IFormatProvider provider)
+        {
+            return Convert.ToInt32(m_v);
+        }
+
+        public uint ToUInt32(IFormatProvider provider)
+        {
+            return Convert.ToUInt32(m_v);
+        }
+
+        public long ToInt64(IFormatProvider provider)
+        {
+            return Convert.ToInt64(m_v);
+        }
+
+        public ulong ToUInt64(IFormatProvider provider)
+        {
+            return Convert.ToUInt64(m_v);
+        }
+
+        public float ToSingle(IFormatProvider provider)
+        {
+            return Convert.ToSingle(m_v);
+        }
+
+        public double ToDouble(IFormatProvider provider)
+        {
+            return m_v;
+        }
+
+        public decimal ToDecimal(IFormatProvider provider)
+        {
+            return Convert.ToDecimal(m_v);
+        }
+
+        public DateTime ToDateTime(IFormatProvider provider)
+        {
+            throw new InvalidCastException("InvalidCast from SmartInt to DateTime");
+        }
+
+        public string ToString(IFormatProvider provider)
+        {
+            return m_v.ToString(provider);
+        }
+
+        public object ToType(Type conversionType, IFormatProvider provider)
+        {
+            throw new NotImplementedException("SmartDouble.ToType is not implemented");
+            // return Convert.DefaultToType((IConvertible)this, type, provider);
+        }
 
     }
 }

@@ -1,23 +1,17 @@
 ﻿/**********************************************************************************
-
 Simple Smart Types Lite
 https://github.com/dgakh/SSTypes
 -----------------------
-
 The MIT License (MIT)
-
 Copyright (c) 2016 Dmitriy Gakh ( dmgakh@gmail.com ).
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,18 +19,19 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
 **********************************************************************************/
 
 namespace SSTypes
 {
+    using System;
+
     /// <summary>
     /// Used for quick and save operations with System.Int32 type.
     /// Compatible with System.Int32 and can be used whenever System.Int32 used.
     /// </summary>
     [System.Serializable, System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
     [System.Runtime.InteropServices.ComVisible(true)]
-    public struct SmartInt : System.IComparable, System.IComparable<SmartInt>, System.IEquatable<SmartInt>
+    public struct SmartInt : System.IComparable, System.IFormattable, System.IConvertible, System.IComparable<SmartInt>, System.IEquatable<SmartInt>
     {
         private System.Int32 m_v;
 
@@ -68,6 +63,17 @@ namespace SSTypes
         }
 
         /// <summary>
+        /// Construct SmartInt from System.Int32?.
+        /// </summary>
+        public SmartInt(System.Int32? value)
+        {
+            if (value.HasValue)
+                m_v = value.Value;
+            else
+                m_v = BadValue.m_v;
+        }
+
+        /// <summary>
         /// Returns true if value is bad.
         /// </summary>
         public bool isBad()
@@ -82,7 +88,12 @@ namespace SSTypes
         {
             return m_v < 0;
         }
-
+/*
+        public static SmartInt operator +(SmartInt c1, SmartInt c2)
+        {
+            return new SmartInt(c1.m_v + c2.m_v);
+        }
+*/
         /// <summary>
         /// Converts the value of System.Int32 to SmartInt.
         /// </summary>
@@ -100,6 +111,54 @@ namespace SSTypes
         }
 
         /// <summary>
+        /// Converts the value of System.Int32? to SmartInt.
+        /// Nullable compatibility support.
+        /// </summary>
+        public static implicit operator SmartInt(System.Int32? value)
+        {
+            return new SmartInt(value);
+        }
+        
+        /// <summary>
+        /// Converts the value of SmartInt to System.Int32?.
+        /// Nullable compatibility support.
+        /// </summary>
+        public static implicit operator System.Int32?(SmartInt value)
+        {
+            if (value.isBad())
+                return null;
+
+            return new System.Int32?(value.m_v);
+        }
+        
+        // Nullable compatibility support.
+        public bool HasValue
+        {
+            get
+            {
+                return !isBad();
+            }
+        }
+
+        // Nullable compatibility support.
+        public SmartInt Value
+        {
+            get
+            {
+                if (!HasValue)
+                    throw new System.InvalidOperationException("SmartInt must have a value.");
+                else
+                    return this;
+            }
+        }
+
+        // Nullable compatibility support.
+        public SmartInt GetValueOrDefault()
+        {
+            return HasValue ? this : default(SmartInt);
+        }
+
+        /// <summary>
         /// Converts the value of System.Int16 to SmartInt.
         /// </summary>
         public static implicit operator SmartInt(System.Int16 value)
@@ -114,7 +173,6 @@ namespace SSTypes
         {
             return (System.Int16)value.m_v;
         }
-
 
         /*
         - Is not useful because compiler can assign SmartInt to Int64
@@ -138,7 +196,6 @@ namespace SSTypes
 
         /*
         - Is not useful because compiler can assign SmartInt to Double
-
                 /// <summary>
                 /// Converts the value of SmartInt to System.Double.
                 /// </summary>
@@ -164,17 +221,16 @@ namespace SSTypes
             return SmartInt.Parse(value);
         }
 
-        /*
-                - Is not useful because compiler can assign SmartInt to Decimal
-
-                /// <summary>
-                /// Converts the value of SmartInt to System.Decimal.
-                /// </summary>
-                public static implicit operator Decimal(SmartInt value)
-                {
-                    return value.m_v;
-                }
-        */
+/*
+        - Is not useful because compiler can assign SmartInt to Decimal
+        /// <summary>
+        /// Converts the value of SmartInt to System.Decimal.
+        /// </summary>
+        public static implicit operator Decimal(SmartInt value)
+        {
+            return value.m_v;
+        }
+*/
 
         /// <summary>
         /// Converts the value of System.Decimal to SmartInt.
@@ -472,7 +528,6 @@ namespace SSTypes
             return Parse(o.ToString());
         }
 
-
         /// <summary>
         /// Converts the numeric value of this instance to its equivalent string representation.
         /// Returns:
@@ -486,7 +541,6 @@ namespace SSTypes
             SmartInt.ToStringBuilder(m_v, 0, sb);
             return sb.ToString();
         }
-
 
         /// <summary>
         /// Converts the numeric value to its equivalent string representation.
@@ -696,5 +750,100 @@ namespace SSTypes
             throw new System.ArgumentException("Type must be compatible with SSTypes.SmartInt");
         }
 
+        public Type GetType()
+        {
+            return m_v.GetType();
+        }
+
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            return m_v.ToString(format, formatProvider);
+        }
+
+        public TypeCode GetTypeCode()
+        {
+            return TypeCode.Int32;
+        }
+
+        public bool ToBoolean(IFormatProvider provider)
+        {
+            return Convert.ToBoolean(m_v);
+        }
+
+        public char ToChar(IFormatProvider provider)
+        {
+            return Convert.ToChar(m_v);
+        }
+
+        public sbyte ToSByte(IFormatProvider provider)
+        {
+            return Convert.ToSByte(m_v);
+        }
+
+        public byte ToByte(IFormatProvider provider)
+        {
+            return Convert.ToByte(m_v);
+        }
+
+        public short ToInt16(IFormatProvider provider)
+        {
+            return Convert.ToInt16(m_v);
+        }
+
+        public ushort ToUInt16(IFormatProvider provider)
+        {
+            return Convert.ToUInt16(m_v);
+        }
+
+        public int ToInt32(IFormatProvider provider)
+        {
+            return m_v;
+        }
+
+        public uint ToUInt32(IFormatProvider provider)
+        {
+            return Convert.ToUInt32(m_v);
+        }
+
+        public long ToInt64(IFormatProvider provider)
+        {
+            return Convert.ToInt64(m_v);
+        }
+
+        public ulong ToUInt64(IFormatProvider provider)
+        {
+            return Convert.ToUInt64(m_v);
+        }
+
+        public float ToSingle(IFormatProvider provider)
+        {
+            return Convert.ToSingle(m_v);
+        }
+
+        public double ToDouble(IFormatProvider provider)
+        {
+            return Convert.ToDouble(m_v);
+        }
+
+        public decimal ToDecimal(IFormatProvider provider)
+        {
+            return Convert.ToDecimal(m_v);
+        }
+
+        public DateTime ToDateTime(IFormatProvider provider)
+        {
+            throw new InvalidCastException("InvalidCast from SmartInt to DateTime");
+        }
+
+        public string ToString(IFormatProvider provider)
+        {
+            return m_v.ToString(provider);
+        }
+
+        public object ToType(Type conversionType, IFormatProvider provider)
+        {
+            throw new NotImplementedException("SmartInt.ToType is not implemented");
+            // return Convert.DefaultToType((IConvertible)this, type, provider);
+        }
     }
 }
