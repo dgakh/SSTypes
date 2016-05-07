@@ -1,16 +1,15 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SSTypes;
 using System.Text;
 
-namespace UnitTests
+namespace SSTypes.Tests
 {
-
     [TestClass]
-    public class SmartIntUT
+    public class SmartIntTests
     {
         [TestMethod]
-        public void Test_SmartInt_Parse_String()
+        [Description("SmartInt.Parse")]
+        public void SmartInt_Parse_String_Test()
         {
             #region General
 
@@ -169,7 +168,9 @@ namespace UnitTests
             Assert.AreEqual(true, SmartInt.Parse("      +     ").isBad(), "Parsing \"      +     \"");
             Assert.AreEqual(true, SmartInt.Parse("-").isBad(), "Parsing \"-\"");
             Assert.AreEqual(true, SmartInt.Parse("+").isBad(), "Parsing \"+\"");
-            Assert.AreEqual(true, SmartInt.Parse(null).isBad(), "Parsing null");
+
+            string null_str = null;
+            Assert.AreEqual(true, SmartInt.Parse(null_str).isBad(), "Parsing null");
             Assert.AreEqual(true, SmartInt.Parse("abrakadabra").isBad(), "Parsing \"abrakadabra\"");
 
             Assert.AreEqual(true, SmartInt.Parse("1.0").isBad(), "Parsing \"1.0\"");
@@ -192,9 +193,6 @@ namespace UnitTests
                     sb.Append((i % 10).ToString());
 
                 Assert.AreEqual(true, SmartInt.Parse(sb.ToString()).isBad(), "Parsing \"Extremal, Digits\"");
-
-                sb = null;
-                GC.Collect();
             }
 
             // Letters
@@ -206,16 +204,14 @@ namespace UnitTests
                     sb.Append("A" + (i % 10));
 
                 Assert.AreEqual(true, SmartInt.Parse(sb.ToString()).isBad(), "Parsing \"Extremal, Letters\"");
-
-                sb = null;
-                GC.Collect();
             }
 
             #endregion
         }
 
         [TestMethod]
-        public void Test_SmartInt_ToString()
+        [Description("SmartInt.ToString")]
+        public void SmartInt_ToString_Test()
         {
             Assert.AreEqual("0", (new SmartInt(0)).ToString(), "Parsing \"0\"");
             Assert.AreEqual("1", (new SmartInt(1)).ToString(), "Parsing \"1\"");
@@ -229,7 +225,8 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void Test_SmartInt_Parse_BruteForce()
+        [Description("Based on comparing in cycle of int and SmartInt.Parse(int.ToString())")]
+        public void SmartInt_Parse_BruteForce_Test()
         {
             int test_count = 10000000;
             Random rnd = new Random();
@@ -246,12 +243,13 @@ namespace UnitTests
                 SmartInt sipv = SmartInt.Parse(sp);
                 SmartInt sinv = SmartInt.Parse(sn);
 
-                Assert.IsTrue( (siv == v) && (sipv == v) && (sinv == -v), "Parsing " + v.ToString());
+                Assert.IsTrue((siv == v) && (sipv == v) && (sinv == -v), "Parsing " + v.ToString());
             }
         }
 
         [TestMethod]
-        public void Test_SmartInt_ToString_BruteForce()
+        [Description("Based on comparing in cycle of int.ToString() and SmartInt.ToString()")]
+        public void SmartInt_ToString_BruteForce_Test()
         {
             int test_count = 10000000;
             Random rnd = new Random();

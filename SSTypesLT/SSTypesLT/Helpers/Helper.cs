@@ -1,8 +1,8 @@
 ﻿/**********************************************************************************
 
-Examples
+Simple Smart Types Lite
 https://github.com/dgakh/SSTypes
---------
+-----------------------
 
 The MIT License (MIT)
 
@@ -28,34 +28,30 @@ SOFTWARE.
 
 **********************************************************************************/
 
-namespace Examples
+namespace SSTypes
 {
-    using System;
-
-
-    class Program
+    /// <summary>
+    /// Class containing useful fields, methods, and properties need for other classes or
+    /// for general purposes.
+    /// </summary>
+    public static class Helper
     {
-        static void Main(string[] args)
+        /// <summary>
+        /// Combines two int hash values into one.
+        /// </summary>
+        /// <param name="code_1">First code to combine.</param>
+        /// <param name="code_2">Second code to combine.</param>
+        /// <returns>Combined hash code.</returns>
+        public static int CombineHashCodes(int code_1, int code_2)
         {
-            // Uncomment example you want to run
+            int result;
 
-            //CleanStringParse.RunTest(args);
+            unchecked
+            {
+                result = (code_1 << 5) + 3 + code_1 ^ code_2;
+            }
 
-            SmartIntExample.OperationsAdd();
-            //SmartIntExample.ArraySize();
-
-            //SmartIntExample.AssignmentByte();
-            //SmartIntExample.AssignmentSingle();
-            //SmartIntExample.AssignmentInt();
-            //SmartIntExample.AssignmentLong();
-            //SmartIntExample.AssignmentDouble();
-            //SmartIntExample.AssignmentSmartDouble();
-            //SmartIntExample.AssignmentDecimal();
-
-            //SmartIntExample.IteratorIndexer();
-
-            Console.WriteLine("Press any key to exit.");
-            Console.ReadKey();
+            return result;
         }
     }
 }

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SSTypesLT</RootNamespace>
     <AssemblyName>SSTypesLT</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -52,6 +52,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Geo\PointD.cs" />
+    <Compile Include="Helpers\Helper.cs" />
+    <Compile Include="Helpers\HelperInternal.cs" />
     <Compile Include="Native\SmartDouble.cs" />
     <Compile Include="Native\SmartInt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

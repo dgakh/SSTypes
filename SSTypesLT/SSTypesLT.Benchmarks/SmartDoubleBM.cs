@@ -10,6 +10,89 @@ namespace PerformanceTest
     {
     }
 
+    // Test Simple Operations SSTypes.SmartDouble.Parse and System.Double
+    public class SmartDoubleBM_SimpleOperations
+    {
+        int cycles = 10000000;
+        int count = 10;
+
+        public SmartDoubleBM_SimpleOperations()
+        {
+        }
+
+        [Benchmark]
+        public SSTypes.SmartDouble Additions_SmartDouble()
+        {
+            SSTypes.SmartDouble s = 0;
+            SSTypes.SmartDouble d = 7;
+
+            for (var cc = 0; cc < cycles; cc++)
+            {
+                s = 0;
+                d = 7;
+
+                for (var i = 0; i < count; i++)
+                    s += d;
+            }
+
+            return s;
+        }
+
+        [Benchmark]
+        public System.Double Additions_Double()
+        {
+            System.Double s = 0;
+            System.Double d = 7;
+
+            for (var cc = 0; cc < cycles; cc++)
+            {
+                s = 0;
+                d = 7;
+
+                for (var i = 0; i < count; i++)
+                    s += d;
+            }
+
+            return s;
+        }
+
+        [Benchmark]
+        public System.Double Additions_DoubleDef()
+        {
+            double s = 0;
+            double d = 7;
+
+            for (var cc = 0; cc < cycles; cc++)
+            {
+                s = 0;
+                d = 7;
+
+                for (var i = 0; i < count; i++)
+                    s += d;
+            }
+
+            return s;
+        }
+
+        //[Benchmark]
+        public System.Double? Additions_DoubleNull()
+        {
+            System.Double? s = 0;
+            System.Double? d = 7;
+
+            for (var cc = 0; cc < cycles; cc++)
+            {
+                s = 0;
+                d = 7;
+
+                for (var i = 0; i < count; i++)
+                    s += d;
+            }
+
+            return s;
+        }
+
+    }
 
     // Uncomment if wish to run specific platform
     //[BenchmarkTask(platform: BenchmarkPlatform.X86, jitVersion: BenchmarkJitVersion.LegacyJit)]

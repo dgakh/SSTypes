@@ -28,17 +28,22 @@ SOFTWARE.
 
 **********************************************************************************/
 
-using System;
-
 namespace SSTypes
 {
     /// <summary>
     /// Used for quick and save operations with System.Double type.
-    /// Compatible with System.Double and can be used whenever System.Double used.
+    /// 
+    /// Designed to operate with values in ranges:
+    /// -10000000000000000.0..-0.00000000000000001 and
+    /// 0.00000000000000001..10000000000000000.0
+    /// 
+    /// Successfully used in input sanitation for web services, text parsing, and output to text
+    /// 
+    /// Compatible with System.Double and technically can be used whenever System.Double used.
     /// </summary>
     [System.Serializable, System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
     [System.Runtime.InteropServices.ComVisible(true)]
-    public struct SmartDouble : System.IComparable, System.IFormattable, System.IConvertible, System.IComparable<SmartDouble>, System.IEquatable<SmartDouble>
+    public struct SmartDouble : System.IComparable, System.IComparable<SmartDouble>, System.IEquatable<SmartDouble>
     {
         private System.Double m_v;
 
@@ -67,7 +72,7 @@ namespace SSTypes
         /// </summary>
         public static readonly SmartDouble BadValue = System.Double.NaN;
 
-        // Private constants
+        #region Internal Constants
 
         // Initiate directly to avoid possible accumulation of error during calculations
         private readonly static double[][] kaa2d = new double[][] {
@@ -112,23 +117,14 @@ namespace SSTypes
         private readonly static System.Int64[] correction_powers = new System.Int64[] { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000 };
         private readonly static System.Double[] decimal_powers = new System.Double[] { 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 1e-11, 1e-12, 1e-13, 1e-14, 1e-15, 1e-16, 1e-17, 1e-18 };
 
+        #endregion
+
         /// <summary>
         /// Construct SmartDouble from System.Double.
         /// </summary>
         public SmartDouble(System.Double value)
         {
             m_v = value;
-        }
-
-        /// <summary>
-        /// Construct SmartDouble from System.Double.
-        /// </summary>
-        public SmartDouble(System.Double? value)
-        {
-            if (value.HasValue)
-                m_v = value.Value;
-            else
-                m_v = BadValue.m_v;
         }
 
         /// <summary>
@@ -146,7 +142,7 @@ namespace SSTypes
         {
             return (
                 System.Double.IsNaN(m_v) ||
-                (MaxValue.m_v < m_v) || (m_v < MaxValue.m_v) ||
+                (m_v < MinValue.m_v) || (MaxValue.m_v < m_v) ||
                 ((m_v != 0) && (MaxnegativeValue < m_v) && (m_v < MinPositiveValue))
                 );
         }
@@ -165,54 +161,6 @@ namespace SSTypes
         public static implicit operator System.Double(SmartDouble value)
         {
             return value.m_v;
-        }
-
-        /// <summary>
-        /// Converts the value of System.Double? to SmartDouble.
-        /// Nullable compatibility support.
-        /// </summary>
-        public static implicit operator SmartDouble(System.Double? value)
-        {
-            return new SmartDouble(value);
-        }
-
-        /// <summary>
-        /// Converts the value of SmartDouble to System.Double?.
-        /// Nullable compatibility support.
-        /// </summary>
-        public static implicit operator System.Double?(SmartDouble value)
-        {
-            if (value.isBad())
-                return null;
-
-            return new System.Double?(value.m_v);
-        }
-
-        // Nullable compatibility support.
-        public bool HasValue
-        {
-            get
-            {
-                return !isBad();
-            }
-        }
-
-        // Nullable compatibility support.
-        public SmartDouble Value
-        {
-            get
-            {
-                if (!HasValue)
-                    throw new System.InvalidOperationException("SmartDouble must have a value.");
-                else
-                    return this;
-            }
-        }
-
-        // Nullable compatibility support.
-        public SmartDouble GetValueOrDefault()
-        {
-            return HasValue ? this : default(SmartDouble);
         }
 
         /// <summary>
@@ -273,6 +221,8 @@ namespace SSTypes
         {
             return new SmartDouble((System.Double)value);
         }
+
+        #region Parse Routines
 
         /// <summary>
         /// Parses System.Decimal and returns SmartDouble.
@@ -383,7 +333,8 @@ namespace SSTypes
         }
 
         /// <summary>
-        /// Parses System.String from inclusive start position to inclusive end position and returns SmartDouble.
+        /// Parses System.String from inclusive start position to inclusive end position
+        /// and returns SmartDouble.
         /// Does not throw exception.
         /// Returns SmartDouble.BadValue if error.
         /// Control if string is null, cannot parse or contained a too big number.
@@ -407,8 +358,8 @@ namespace SSTypes
             int pw = 0;
             bool dec_sep = false;
 
-            char sep_decimal = '.';
-            char th_digital = ',';
+            //char sep_decimal = '.';
+            //char th_digital = ',';
 
             bool is_negative = false;
             bool is_positive = false;
@@ -445,7 +396,8 @@ namespace SSTypes
                     continue;
                 }
 
-                if (c == sep_decimal)
+                //if (c == sep_decimal)
+                if ((c == '.') || (c == ','))
                 {
                     if (dec_sep)
                         return SmartDouble.BadValue;
@@ -455,13 +407,13 @@ namespace SSTypes
                     pos++;
                     continue;
                 }
-
-                if (c == th_digital)
-                {
-                    pos++;
-                    continue;
-                }
-
+                /*
+                                if (c == th_digital)
+                                {
+                                    pos++;
+                                    continue;
+                                }
+                */
                 if (c == ' ')
                 {
                     if (pos == start)
@@ -509,6 +461,9 @@ namespace SSTypes
 
             if (digits < 9)
             {
+                if (digits == 0)
+                    return SmartDouble.BadValue;
+
                 if (is_negative)
                     return -v1 * decimal_powers[pw];
                 else
@@ -576,152 +531,266 @@ namespace SSTypes
             return SmartDouble.Parse(o.ToString());
         }
 
-        /// <summary>
-        /// Converts the value to its equivalent string representation.
-        /// Returns:
-        ///     The string representation of the value of this instance, consisting of a
-        ///     negative sign if the value is negative, and a sequence of digits ranging
-        ///     from 0 to 9 with no leading zeroes.
-        /// </summary>
-        public string ToString(System.Int32 digits)
-        {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder(16);
-            ToStringBuilder('.', (System.Byte)digits, sb);
-            return sb.ToString();
-        }
+        #endregion
+
+        #region ToString methods
 
         /// <summary>
-        /// Converts the value to its equivalent string representation.
-        /// Returns:
-        ///     The string representation of the value of this instance, consisting of a
-        ///     negative sign if the value is negative, and a sequence of digits ranging
-        ///     from 0 to 9 with no leading zeroes.
-        /// </summary>
-        public string ToString(char point, System.Int32 digits)
-        {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder(16);
-            ToStringBuilder(point, (System.Byte)digits, sb);
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Converts the value to its equivalent string representation.
-        /// Returns:
-        ///     The string representation of the value of this instance, consisting of a
-        ///     negative sign if the value is negative, and a sequence of digits ranging
-        ///     from 0 to 9 with no leading zeroes.
-        /// </summary>
-        public string ToString(char point)
-        {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder(16);
-            ToStringBuilder(point, 12, sb);
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Converts the numeric value of this instance to its equivalent string representation.
-        /// Returns:
-        ///     The string representation of the value of this instance, consisting of a
-        ///     negative sign if the value is negative, and a sequence of digits ranging
-        ///     from 0 to 9 with no leading zeroes.
+        /// Converts the value to its equivalent string representation and rounds it.
+        /// Uses '.' as decimal delimeter and 12 as maximum number of decimal digits
+        /// after delimeter when rounding.
         /// </summary>
         public override string ToString()
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder(14);
-            ToStringBuilder('.', 12, sb);
+            SmartDouble.ToStringBuilder(sb, m_v, '.', 12);
             return sb.ToString();
         }
 
         /// <summary>
-        /// Converts the value to its equivalent string representation.
-        /// Returns:
-        ///     The string representation of the value of this instance, consisting of a
-        ///     negative sign if the value is negative, and a sequence of digits ranging
-        ///     from 0 to 9 with no leading zeroes.
+        /// Converts the value to its equivalent string representation and rounds it 
+        /// to have maximum ndp digits after delimeter when rounding.
+        /// Uses '.' as decimal delimeter.
         /// </summary>
-        public static string ToStringValue(SmartDouble value)
+        /// <param name="ndp">Maximal number of digits after delimeter when rounding.
+        /// (if ndp > 16 then ndp = 16)</param>
+        public string ToString(byte ndp)
         {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder(14);
-            SmartDouble.ToStringBuilder(value, '.', 12, sb);
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(16);
+            SmartDouble.ToStringBuilder(sb, m_v, '.', ndp);
             return sb.ToString();
         }
 
         /// <summary>
-        /// Converts the value to its equivalent string representation and puts it into StringBuilder.
-        /// Returns into StringBuilder:
-        ///     The string representation of the value of this instance, consisting of a
-        ///     negative sign if the value is negative, and a sequence of digits ranging
-        ///     from 0 to 9 with no leading zeroes.
+        /// Converts the value to its equivalent string representation and rounds it.
+        /// Uses point as decimal delimeter and 12 as maximum number of digits
+        /// after delimeter when rounding.
         /// </summary>
-        public void ToStringBuilder(System.Int32 digits, System.Text.StringBuilder sb)
+        /// <param name="point">Decimal delimeter.</param>
+        // Should be tested for not empty StringBuilder
+        public string ToString(char point)
         {
-            ToStringBuilder('.', (System.Byte)digits, sb);
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(16);
+            SmartDouble.ToStringBuilder(sb, m_v, point, 12);
+            return sb.ToString();
         }
 
         /// <summary>
-        /// Converts the value to its equivalent string representation and puts it into StringBuilder.
-        /// Returns into StringBuilder:
-        ///     The string representation of the value of this instance, consisting of a
-        ///     negative sign if the value is negative, and a sequence of digits ranging
-        ///     from 0 to 9 with no leading zeroes.
+        /// Converts the value to its equivalent string representation and rounds it.
         /// </summary>
-        public void ToStringBuilder(char point, System.Int32 digits, System.Text.StringBuilder sb)
+        /// <param name="point">Decimal delimeter.</param>
+        /// <param name="ndp">Maximal number of digits after delimeter when rounding.
+        /// (if ndp > 16 then ndp = 16)</param>
+        public string ToString(char point, byte ndp)
         {
-            SmartDouble.ToStringBuilder(m_v, point, (System.Byte)digits, sb);
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(16);
+            SmartDouble.ToStringBuilder(sb, m_v, point, ndp);
+            return sb.ToString();
         }
 
-        /// <summary>
-        /// Converts the value to its equivalent string representation and puts it into StringBuilder.
-        /// Returns into StringBuilder:
-        ///     The string representation of the value of this instance, consisting of a
-        ///     negative sign if the value is negative, and a sequence of digits ranging
-        ///     from 0 to 9 with no leading zeroes.
-        /// </summary>
-        public void ToStringBuilder(char point, System.Text.StringBuilder sb)
-        {
-            ToStringBuilder(point, 12, sb);
-        }
+
+
 
         /// <summary>
-        /// Converts the value to its equivalent string representation and puts it into StringBuilder.
-        /// Returns into StringBuilder:
-        ///     The string representation of the value of this instance, consisting of a
-        ///     negative sign if the value is negative, and a sequence of digits ranging
-        ///     from 0 to 9 with no leading zeroes.
+        /// Converts the value to its equivalent string representation, rounds it 
+        /// and puts it into StringBuilder. Uses '.' as decimal delimeter
+        /// and 12 as maximum number of digits after delimeter when rounding.
         /// </summary>
+        /// <param name="sb">StringBuilder to recieve the final text value.</param>
         public void ToStringBuilder(System.Text.StringBuilder sb)
         {
-            ToStringBuilder('.', 12, sb);
+            SmartDouble.ToStringBuilder(sb, m_v, '.', 12);
         }
 
         /// <summary>
-        /// Converts the value to its equivalent string representation and puts it into StringBuilder.
-        /// Returns into StringBuilder:
-        ///     The string representation of the value of this instance, consisting of a
-        ///     negative sign if the value is negative, and a sequence of digits ranging
-        ///     from 0 to 9 with no leading zeroes.
+        /// Converts the value to its equivalent string representation, rounds it to have ndp 
+        /// digits after decimal delimeter and puts it into StringBuilder sb. Uses '.' as decimal 
+        /// delimeter.
         /// </summary>
-        // max ndp = 16
+        /// <param name="ndp">Maximal number of digits after delimeter when rounding.
+        /// (if ndp > 16 then ndp = 16)</param>
+        /// <param name="sb">StringBuilder to recieve the final text value.</param>
+        public void ToStringBuilder(System.Text.StringBuilder sb, byte ndp)
+        {
+            SmartDouble.ToStringBuilder(sb, m_v, '.', ndp);
+        }
+
+        /// <summary>
+        /// Converts the value to its equivalent string representation, round it and puts it
+        /// into StringBuilder. Uses 12 as maximum number of decimal digits.
+        /// </summary>
+        /// <param name="point">Decimal delimeter.</param>
+        /// <param name="sb">StringBuilder to recieve the final text value.</param>
         // Should be tested for not empty StringBuilder
-        public unsafe static void ToStringBuilder(
-            SmartDouble value,
-            char point,
-            System.Byte ndp,
-            System.Text.StringBuilder sb
+        public void ToStringBuilder(System.Text.StringBuilder sb, char point)
+        {
+            SmartDouble.ToStringBuilder(sb, m_v, point, 12);
+        }
+
+        /// <summary>
+        /// Converts the value to its equivalent string representation, round it to have ndp 
+        /// digits after decimal delimeter and puts it into StringBuilder.
+        /// </summary>
+        /// <param name="point">Decimal delimeter.</param>
+        /// <param name="ndp">Maximal number of digits after delimeter when rounding.
+        /// (if ndp > 16 then ndp = 16)</param>
+        /// <param name="sb">StringBuilder to recieve the final text value.</param>
+        public void ToStringBuilder(System.Text.StringBuilder sb, char point, byte ndp)
+        {
+            SmartDouble.ToStringBuilder(sb, m_v, point, ndp);
+        }
+
+
+
+
+
+
+        /// <summary>
+        /// Converts the value to its equivalent string representation. Uses '.' as decimal 
+        /// delimeter and 12 as maximum number of decimal digits.
+        /// </summary>
+        /// <param name="value">Value to be converted.</param>
+        public static string ToString(double value)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(14);
+            SmartDouble.ToStringBuilder(sb, value, '.', 12);
+            return sb.ToString();
+        }
+
+
+        /// <summary>
+        /// Converts the value to its equivalent string representation and rounds it 
+        /// to have maximum ndp digits after decimal delimeter.
+        /// Uses '.' as decimal delimeter.
+        /// </summary>
+        /// <param name="value">Value to be converted.</param>
+        /// <param name="ndp">Maximal number of digits after delimeter when rounding.
+        /// (if ndp > 16 then ndp = 16)</param>
+        public static string ToString(double value, byte ndp)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(16);
+            SmartDouble.ToStringBuilder(sb, value, '.', ndp);
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Converts the value to its equivalent string representation and rounds it.
+        /// Uses 12 as maximum number of decimal digits.
+        /// </summary>
+        /// <param name="value">Value to be converted.</param>
+        /// <param name="point">Decimal delimeter.</param>
+        // Should be tested for not empty StringBuilder
+        public static string ToString(double value, char point)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(16);
+            SmartDouble.ToStringBuilder(sb, value, point, 12);
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Converts the value to its equivalent string representation and rounds it.
+        /// </summary>
+        /// <param name="value">Value to be converted.</param>
+        /// <param name="point">Decimal delimeter.</param>
+        /// <param name="ndp">Maximal number of digits after delimeter when rounding.
+        /// (if ndp > 16 then ndp = 16)</param>
+        // Should be tested for not empty StringBuilder
+        public static string ToString(double value, char point, byte ndp)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(16);
+            SmartDouble.ToStringBuilder(sb, value, point, ndp);
+            return sb.ToString();
+        }
+
+
+
+
+
+
+
+
+        /// <summary>
+        /// Converts the value to its equivalent string representation, round it to have ndp 
+        /// digits after decimal delimeter and puts it into StringBuilder. Uses '.' as decimal 
+        /// delimeter and 12 as maximum number of digits after delimeter when rounding..
+        /// </summary>
+        /// <param name="sb">StringBuilder to recieve the final text value.</param>
+        /// <param name="value">Value to be converted.</param>
+        public static void ToStringBuilder(
+            System.Text.StringBuilder sb,
+            double value
             )
         {
-            System.SByte round_pos;
+            SmartDouble.ToStringBuilder(sb, value, '.', 12);
+        }
 
-            System.Int32 sb_initial_length = sb.Length;
+        /// <summary>
+        /// Converts the value to its equivalent string representation, round it to have ndp 
+        /// digits after decimal delimeter and puts it into StringBuilder sb. Uses '.' as decimal 
+        /// delimeter.
+        /// </summary>
+        /// <param name="sb">StringBuilder to recieve the final text value.</param>
+        /// <param name="value">Value to be converted.</param>
+        /// <param name="ndp">Maximal number of digits after delimeter when rounding.
+        /// (if ndp > 16 then ndp = 16)</param>
+        public static void ToStringBuilder(
+            System.Text.StringBuilder sb,
+            double value,
+            byte ndp
+            )
+        {
+            SmartDouble.ToStringBuilder(sb, value, '.', ndp);
+        }
+
+        /// <summary>
+        /// Converts the value to its equivalent string representation, round it and puts it
+        /// into StringBuilder. Uses 12 as maximum number of decimal digits.
+        /// </summary>
+        /// <param name="sb">StringBuilder to recieve the final text value.</param>
+        /// <param name="value">Value to be converted.</param>
+        /// <param name="point">Decimal delimeter.</param>
+        // Should be tested for not empty StringBuilder
+        public static void ToStringBuilder(
+            System.Text.StringBuilder sb,
+            double value,
+            char point
+            )
+        {
+            SmartDouble.ToStringBuilder(sb, value, point, 12);
+        }
+
+        /// <summary>
+        /// Converts the value to its equivalent string representation, round it to have ndp 
+        /// digits after decimal delimeter and puts it into StringBuilder.
+        /// </summary>
+        /// <param name="sb">StringBuilder to recieve the final text value.</param>
+        /// <param name="value">Value to be converted.</param>
+        /// <param name="point">Decimal delimeter.</param>
+        /// <param name="ndp">Maximal number of digits after delimeter when rounding.
+        /// (if ndp > 16 then ndp = 16)</param>
+        // Should be tested for not empty StringBuilder
+        public unsafe static void ToStringBuilder(
+            System.Text.StringBuilder sb,
+            double value,
+            char point,
+            byte ndp
+            )
+        {
+            sbyte round_pos;
+
+            int sb_initial_length = sb.Length;
 
             if (ndp > 16)
                 round_pos = 16;
             else
-                round_pos = (System.SByte)ndp;
+                round_pos = (sbyte)ndp;
 
-            System.SByte alen2 = (System.SByte)kaa2d.Length;
+            sbyte alen2 = (sbyte)kaa2d.Length;
 
-            System.Byte* aar = stackalloc System.Byte[alen2];
+            // From the spec:
+            // 18.8 Stack allocation
+            // The content of the newly allocated memory is undefined.
+            byte* aar = stackalloc byte[alen2];
 
             if (value > MaxValue)
             {
@@ -754,7 +823,7 @@ namespace SSTypes
                 }
             }
 
-            System.SByte pos = 0;
+            sbyte pos = 0;
 
             // Leading Zeros
             while ((pos < alen2) && (d1 < kaa2d[pos][1]))
@@ -763,9 +832,10 @@ namespace SSTypes
                 pos++;
             }
 
-            const System.SByte point_pos = 17;
+            const sbyte point_pos = 17;
 
-            System.SByte start_pos;
+            sbyte start_pos;
+
             if (pos >= point_pos)
                 start_pos = point_pos;
             else
@@ -836,7 +906,7 @@ namespace SSTypes
             round_pos += point_pos;
 
             // Force round
-            while(pos > round_pos)
+            while (pos >= round_pos)
             {
                 digit = (aar[pos] >= 4);
                 pos--;
@@ -890,12 +960,12 @@ namespace SSTypes
             if (start_pos == point_pos)
                 sb.Append('0');
 
-            System.SByte stop_pos = pos;
+            sbyte stop_pos = pos;
 
             pos = start_pos;
             while ((pos <= stop_pos) && (pos > 0))
             {
-                if(pos == point_pos)
+                if (pos == point_pos)
                     sb.Append('.');
 
                 sb.Append(chars[aar[pos]]);
@@ -903,11 +973,174 @@ namespace SSTypes
                 pos++;
             }
 
-            if(sb.Length == sb_initial_length)
+            while ((pos < point_pos) && (pos > 0))
+            {
+                sb.Append('0');
+                pos++;
+            }
+
+            if (sb.Length == sb_initial_length)
                 sb.Append('0');
 
             return;
         }
+
+        #endregion // ToString
+
+        #region Random Values
+
+        /// <summary>
+        /// Generates new random SmartDouble value.
+        /// Uses internal common System.Random object to generate random value.
+        /// </summary>
+        /// <returns>
+        /// A SmartDouble random value including SmartDouble.BadValue (System.Double.NaN),
+        /// System.Double.NegativeInfinity, and System.Double.PositiveInfinity.
+        /// </returns>
+        public static SmartDouble Random()
+        {
+            return Random(SSTypes.HelperInternal.GetRandomGenerator());
+        }
+
+        /// <summary>
+        /// Generates new random SmartDouble value greater or equals to MinValue and 
+        /// less or equals to MaxValue.
+        /// Uses internal common System.Random object to generate random value.
+        /// </summary>
+        /// <param name="minValue">The inclusive lower bound of the random number returned.</param>
+        /// <param name="maxValue">The inclusive upper bound of the random number returned. maxValue
+        /// should be greater than or equal to minValue.</param>
+        /// <returns>
+        /// A SmartDouble value greater or equals to MinValue and less or equals to MaxValue.;
+        /// that is, the range of return values includes both minValue and maxValue. If minValue
+        /// equals maxValue, minValue is returned. If minValue is greater than maxValue, the
+        /// returned value is within [maxValue..minValue] range.
+        /// </returns>
+        public static SmartDouble Random(
+            SmartDouble minValue,
+            SmartDouble maxValue
+            )
+        {
+            return Random(SSTypes.HelperInternal.GetRandomGenerator(), MinValue, MaxValue);
+        }
+
+        /// <summary>
+        /// Generates new random SmartDouble value. Uses rGen to generate random value.
+        /// </summary>
+        /// <param name="BadValue_alloved">If true, SmartDouble.BadValue (System.Double.NaN) allowed to be returned,
+        /// otherwise SmartDouble.BadValue will never be returned.</param>
+        /// <param name="NegativeInfinity_alloved">If true, System.Double.NegativeInfinity allowed
+        /// to be returned, otherwise System.Double.NegativeInfinity will never be returned.</param>
+        /// <param name="PositiveInfinity_alloved">If true, System.Double.PositiveInfinity allowed
+        /// to be returned, otherwise System.Double.PositiveInfinity will never be returned.</param>
+        /// <returns>
+        /// A SmartDouble random value including SmartDouble.BadValue (System.Double.NaN) if allowed,
+        /// System.Double.NegativeInfinity if allowed, and System.Double.PositiveInfinity if allowed.
+        /// </returns>
+        public static SmartDouble Random(
+            bool BadValue_alloved,
+            bool NegativeInfinity_alloved,
+            bool PositiveInfinity_alloved
+            )
+        {
+            return Random(
+                SSTypes.HelperInternal.GetRandomGenerator(),
+                BadValue_alloved,
+                NegativeInfinity_alloved,
+                PositiveInfinity_alloved
+                );
+        }
+
+        // Internal structure need only for public static SmartDouble Random(System.Random rGen)
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Explicit)]
+        internal struct double_struct
+        {
+            [System.Runtime.InteropServices.FieldOffset(0)]
+            internal double double_value;
+
+            [System.Runtime.InteropServices.FieldOffset(0)]
+            internal long long_value;
+        }
+
+        /// <summary>
+        /// Generates new random SmartDouble value. Uses rGen to generate random number.
+        /// </summary>
+        /// <param name="rGen">Object of type System.Random used to generate random value.</param>
+        /// <returns>
+        /// A SmartDouble random value including SmartDouble.BadValue (System.Double.NaN),
+        /// System.Double.NegativeInfinity, and System.Double.PositiveInfinity.
+        /// </returns>
+        public static SmartDouble Random(System.Random rGen)
+        {
+            double_struct ds = new double_struct();
+            ds.long_value = rGen.Next();
+            ds.long_value <<= 32;
+            ds.long_value &= rGen.Next();
+            return ds.double_value;
+        }
+
+        /// <summary>
+        /// Generates new random SmartDouble value greater or equals to MinValue and 
+        /// less or equals to MaxValue.
+        /// Uses rGen to generate random number.
+        /// </summary>
+        /// <param name="rGen">Object of type System.Random used to generate random value.</param>
+        /// <param name="minValue">The inclusive lower bound of the random number returned.</param>
+        /// <param name="maxValue">The inclusive upper bound of the random number returned. maxValue
+        /// should be greater than or equal to minValue.</param>
+        /// <returns>
+        /// A SmartDouble value greater or equals to MinValue and less or equals to MaxValue.;
+        /// that is, the range of return values includes both minValue and maxValue. If minValue
+        /// equals maxValue, minValue is returned. If minValue is greater than maxValue, the
+        /// returned value is within [maxValue..minValue] range.
+        /// </returns>
+        public static SmartDouble Random(
+            System.Random rGen,
+            SmartDouble minValue,
+            SmartDouble maxValue
+            )
+        {
+            return minValue + (maxValue - minValue) * rGen.Next() / (System.Int32.MaxValue - 1);
+        }
+
+        /// <summary>
+        /// Generates new random SmartDouble value. Uses rGen to generate random number.
+        /// </summary>
+        /// <param name="rGen">Object of type System.Random used to generate random value.</param>
+        /// <param name="BadValue_alloved">If true, SmartDouble.BadValue (System.Double.NaN) allowed to be returned,
+        /// otherwise SmartDouble.BadValue will never be returned.</param>
+        /// <param name="NegativeInfinity_alloved">If true, System.Double.NegativeInfinity allowed to be returned,
+        /// otherwise System.Double.NegativeInfinity will never be returned.</param>
+        /// <param name="PositiveInfinity_alloved">If true, System.Double.PositiveInfinity allowed to be returned,
+        /// otherwise System.Double.PositiveInfinity will never be returned.</param>
+        /// <returns>
+        /// A SmartDouble random value including SmartDouble.BadValue (System.Double.NaN) if allowed,
+        /// System.Double.NegativeInfinity if allowed, and System.Double.PositiveInfinity if allowed.
+        /// </returns>
+        public static SmartDouble Random(
+            System.Random rGen,
+            bool BadValue_alloved,
+            bool NegativeInfinity_alloved,
+            bool PositiveInfinity_alloved
+            )
+        {
+            double d;
+
+            do
+            {
+                d = Random(rGen);
+            }
+            while (
+            ((!BadValue_alloved) && double.IsNaN(d)) ||
+            ((!NegativeInfinity_alloved) && double.IsNegativeInfinity(d)) ||
+            ((!PositiveInfinity_alloved) && double.IsPositiveInfinity(d))
+            );
+
+            return d;
+        }
+
+        #endregion
+
 
         // IEquatable
         public int CompareTo(SmartDouble other)
@@ -962,101 +1195,6 @@ namespace SSTypes
             throw new System.ArgumentException("Type must be compatible with SSTypes.SmartDouble");
         }
 
-        public Type GetType()
-        {
-            return m_v.GetType();
-        }
-
-        public string ToString(string format, IFormatProvider formatProvider)
-        {
-            return m_v.ToString(format, formatProvider);
-        }
-
-        public TypeCode GetTypeCode()
-        {
-            return TypeCode.Double;
-        }
-
-        public bool ToBoolean(IFormatProvider provider)
-        {
-            return Convert.ToBoolean(m_v);
-        }
-
-        public char ToChar(IFormatProvider provider)
-        {
-            return Convert.ToChar(m_v);
-        }
-
-        public sbyte ToSByte(IFormatProvider provider)
-        {
-            return Convert.ToSByte(m_v);
-        }
-
-        public byte ToByte(IFormatProvider provider)
-        {
-            return Convert.ToByte(m_v);
-        }
-
-        public short ToInt16(IFormatProvider provider)
-        {
-            return Convert.ToInt16(m_v);
-        }
-
-        public ushort ToUInt16(IFormatProvider provider)
-        {
-            return Convert.ToUInt16(m_v);
-        }
-
-        public int ToInt32(IFormatProvider provider)
-        {
-            return Convert.ToInt32(m_v);
-        }
-
-        public uint ToUInt32(IFormatProvider provider)
-        {
-            return Convert.ToUInt32(m_v);
-        }
-
-        public long ToInt64(IFormatProvider provider)
-        {
-            return Convert.ToInt64(m_v);
-        }
-
-        public ulong ToUInt64(IFormatProvider provider)
-        {
-            return Convert.ToUInt64(m_v);
-        }
-
-        public float ToSingle(IFormatProvider provider)
-        {
-            return Convert.ToSingle(m_v);
-        }
-
-        public double ToDouble(IFormatProvider provider)
-        {
-            return m_v;
-        }
-
-        public decimal ToDecimal(IFormatProvider provider)
-        {
-            return Convert.ToDecimal(m_v);
-        }
-
-        public DateTime ToDateTime(IFormatProvider provider)
-        {
-            throw new InvalidCastException("InvalidCast from SmartInt to DateTime");
-        }
-
-        public string ToString(IFormatProvider provider)
-        {
-            return m_v.ToString(provider);
-        }
-
-        public object ToType(Type conversionType, IFormatProvider provider)
-        {
-            throw new NotImplementedException("SmartDouble.ToType is not implemented");
-            // return Convert.DefaultToType((IConvertible)this, type, provider);
-        }
 
     }
 }

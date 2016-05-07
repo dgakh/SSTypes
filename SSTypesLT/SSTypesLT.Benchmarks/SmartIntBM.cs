@@ -50,223 +50,259 @@ namespace PerformanceTest
             return s;
         }
 
-
         [Benchmark]
-        public SSTypes.SmartInt Substractions_SmartInt()
+        public System.Int32 Additions_IntDef()
         {
-            SSTypes.SmartInt s = 1000000;
-            SSTypes.SmartInt d = 7;
+            int s = 0;
+            int d = 7;
 
             for (var cc = 0; cc < cycles; cc++)
             {
-                s = 1000000;
+                s = 0;
                 d = 7;
 
                 for (var i = 0; i < count; i++)
-                    s -= d;
+                    s += d;
             }
 
             return s;
         }
 
-        [Benchmark]
-        public System.Int32 Substractions_Int()
+        //[Benchmark]
+        public System.Int32? Additions_IntNull()
         {
-            System.Int32 s = 1000000;
-            System.Int32 d = 7;
+            System.Int32? s = 0;
+            System.Int32? d = 7;
 
             for (var cc = 0; cc < cycles; cc++)
             {
-                s = 1000000;
+                s = 0;
                 d = 7;
 
                 for (var i = 0; i < count; i++)
-                    s -= d;
+                    s += d;
             }
 
             return s;
         }
 
-        [Benchmark]
-        public SSTypes.SmartInt Multiplications_SmartInt()
-        {
-            SSTypes.SmartInt s = 1;
-            SSTypes.SmartInt d = 3;
+        /*
+                [Benchmark]
+                public SSTypes.SmartInt Substractions_SmartInt()
+                {
+                    SSTypes.SmartInt s = 1000000;
+                    SSTypes.SmartInt d = 7;
 
-            for (var cc = 0; cc < cycles; cc++)
-            {
-                s = 1;
-                d = 3;
+                    for (var cc = 0; cc < cycles; cc++)
+                    {
+                        s = 1000000;
+                        d = 7;
 
-                for (var i = 0; i < count; i++)
-                    s *= d;
-            }
+                        for (var i = 0; i < count; i++)
+                            s -= d;
+                    }
 
-            return s;
-        }
+                    return s;
+                }
 
-        [Benchmark]
-        public System.Int32 Multiplications_Int()
-        {
-            System.Int32 s = 1;
-            System.Int32 d = 3;
+                [Benchmark]
+                public System.Int32 Substractions_Int()
+                {
+                    System.Int32 s = 1000000;
+                    System.Int32 d = 7;
 
-            for (var cc = 0; cc < cycles; cc++)
-            {
-                s = 1;
-                d = 3;
+                    for (var cc = 0; cc < cycles; cc++)
+                    {
+                        s = 1000000;
+                        d = 7;
 
-                for (var i = 0; i < count; i++)
-                    s *= d;
-            }
+                        for (var i = 0; i < count; i++)
+                            s -= d;
+                    }
 
-            return s;
-        }
+                    return s;
+                }
 
-        [Benchmark]
-        public SSTypes.SmartInt Divisions_SmartInt()
-        {
-            SSTypes.SmartInt s = int.MaxValue;
-            SSTypes.SmartInt d = 3;
+                [Benchmark]
+                public SSTypes.SmartInt Multiplications_SmartInt()
+                {
+                    SSTypes.SmartInt s = 1;
+                    SSTypes.SmartInt d = 3;
 
-            for (var cc = 0; cc < cycles; cc++)
-            {
-                s = int.MaxValue;
-                d = 3;
+                    for (var cc = 0; cc < cycles; cc++)
+                    {
+                        s = 1;
+                        d = 3;
 
-                for (var i = 0; i < count; i++)
-                    s /= d;
-            }
+                        for (var i = 0; i < count; i++)
+                            s *= d;
+                    }
 
-            return s;
-        }
+                    return s;
+                }
 
-        [Benchmark]
-        public System.Int32 Divisions_Int()
-        {
-            System.Int32 s = int.MaxValue;
-            System.Int32 d = 3;
+                [Benchmark]
+                public System.Int32 Multiplications_Int()
+                {
+                    System.Int32 s = 1;
+                    System.Int32 d = 3;
 
-            for (var cc = 0; cc < cycles; cc++)
-            {
-                s = int.MaxValue;
-                d = 3;
+                    for (var cc = 0; cc < cycles; cc++)
+                    {
+                        s = 1;
+                        d = 3;
 
-                for (var i = 0; i < count; i++)
-                    s /= d;
-            }
+                        for (var i = 0; i < count; i++)
+                            s *= d;
+                    }
 
-            return s;
-        }
+                    return s;
+                }
 
-        [Benchmark]
-        public SSTypes.SmartInt DivResiduals_SmartInt()
-        {
-            SSTypes.SmartInt s = int.MaxValue;
-            SSTypes.SmartInt d = 3;
+                [Benchmark]
+                public SSTypes.SmartInt Divisions_SmartInt()
+                {
+                    SSTypes.SmartInt s = int.MaxValue;
+                    SSTypes.SmartInt d = 3;
 
-            for (var cc = 0; cc < cycles; cc++)
-            {
-                s = int.MaxValue;
-                d = 3;
+                    for (var cc = 0; cc < cycles; cc++)
+                    {
+                        s = int.MaxValue;
+                        d = 3;
 
-                for (var i = 0; i < count; i++)
-                    s %= d;
-            }
+                        for (var i = 0; i < count; i++)
+                            s /= d;
+                    }
 
-            return s;
-        }
+                    return s;
+                }
 
-        [Benchmark]
-        public System.Int32 DivResiduals_Int()
-        {
-            System.Int32 s = int.MaxValue;
-            System.Int32 d = 3;
+                [Benchmark]
+                public System.Int32 Divisions_Int()
+                {
+                    System.Int32 s = int.MaxValue;
+                    System.Int32 d = 3;
 
-            for (var cc = 0; cc < cycles; cc++)
-            {
-                s = int.MaxValue;
-                d = 3;
+                    for (var cc = 0; cc < cycles; cc++)
+                    {
+                        s = int.MaxValue;
+                        d = 3;
 
-                for (var i = 0; i < count; i++)
-                    s %= d;
-            }
+                        for (var i = 0; i < count; i++)
+                            s /= d;
+                    }
 
-            return s;
-        }
+                    return s;
+                }
 
-        [Benchmark]
-        public SSTypes.SmartInt LogicAnds_SmartInt()
-        {
-            SSTypes.SmartInt s = 17;
-            SSTypes.SmartInt d = 3;
+                [Benchmark]
+                public SSTypes.SmartInt DivResiduals_SmartInt()
+                {
+                    SSTypes.SmartInt s = int.MaxValue;
+                    SSTypes.SmartInt d = 3;
 
-            for (var cc = 0; cc < cycles; cc++)
-            {
-                s = 17;
-                d = 3;
+                    for (var cc = 0; cc < cycles; cc++)
+                    {
+                        s = int.MaxValue;
+                        d = 3;
 
-                for (var i = 0; i < count; i++)
-                    s &= d;
-            }
+                        for (var i = 0; i < count; i++)
+                            s %= d;
+                    }
 
-            return s;
-        }
+                    return s;
+                }
 
-        [Benchmark]
-        public System.Int32 LogicAnds_Int()
-        {
-            System.Int32 s = 17;
-            System.Int32 d = 3;
+                [Benchmark]
+                public System.Int32 DivResiduals_Int()
+                {
+                    System.Int32 s = int.MaxValue;
+                    System.Int32 d = 3;
 
-            for (var cc = 0; cc < cycles; cc++)
-            {
-                s = 17;
-                d = 3;
+                    for (var cc = 0; cc < cycles; cc++)
+                    {
+                        s = int.MaxValue;
+                        d = 3;
 
-                for (var i = 0; i < count; i++)
-                    s &= d;
-            }
+                        for (var i = 0; i < count; i++)
+                            s %= d;
+                    }
 
-            return s;
-        }
+                    return s;
+                }
 
-        [Benchmark]
-        public SSTypes.SmartInt LogicOrs_SmartInt()
-        {
-            SSTypes.SmartInt s = 17;
-            SSTypes.SmartInt d = 3;
+                [Benchmark]
+                public SSTypes.SmartInt LogicAnds_SmartInt()
+                {
+                    SSTypes.SmartInt s = 17;
+                    SSTypes.SmartInt d = 3;
 
-            for (var cc = 0; cc < cycles; cc++)
-            {
-                s = 17;
-                d = 3;
+                    for (var cc = 0; cc < cycles; cc++)
+                    {
+                        s = 17;
+                        d = 3;
 
-                for (var i = 0; i < count; i++)
-                    s |= d;
-            }
+                        for (var i = 0; i < count; i++)
+                            s &= d;
+                    }
 
-            return s;
-        }
+                    return s;
+                }
 
-        [Benchmark]
-        public System.Int32 LogicOrs_Int()
-        {
-            System.Int32 s = 17;
-            System.Int32 d = 3;
+                [Benchmark]
+                public System.Int32 LogicAnds_Int()
+                {
+                    System.Int32 s = 17;
+                    System.Int32 d = 3;
 
-            for (var cc = 0; cc < cycles; cc++)
-            {
-                s = 17;
-                d = 3;
+                    for (var cc = 0; cc < cycles; cc++)
+                    {
+                        s = 17;
+                        d = 3;
 
-                for (var i = 0; i < count; i++)
-                    s |= d;
-            }
+                        for (var i = 0; i < count; i++)
+                            s &= d;
+                    }
 
-            return s;
-        }
+                    return s;
+                }
 
+                [Benchmark]
+                public SSTypes.SmartInt LogicOrs_SmartInt()
+                {
+                    SSTypes.SmartInt s = 17;
+                    SSTypes.SmartInt d = 3;
+
+                    for (var cc = 0; cc < cycles; cc++)
+                    {
+                        s = 17;
+                        d = 3;
+
+                        for (var i = 0; i < count; i++)
+                            s |= d;
+                    }
+
+                    return s;
+                }
+
+                [Benchmark]
+                public System.Int32 LogicOrs_Int()
+                {
+                    System.Int32 s = 17;
+                    System.Int32 d = 3;
+
+                    for (var cc = 0; cc < cycles; cc++)
+                    {
+                        s = 17;
+                        d = 3;
+
+                        for (var i = 0; i < count; i++)
+                            s |= d;
+                    }
+
+                    return s;
+                }
+        */
     }
 
 

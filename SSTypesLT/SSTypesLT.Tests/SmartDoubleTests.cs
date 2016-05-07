@@ -1,16 +1,14 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SSTypes;
 using System.Text;
 
-namespace UnitTests
+namespace SSTypes.Tests
 {
-
     [TestClass]
-    public class SmartDoubleUT
+    public class SmartDoubleTests
     {
         [TestMethod]
-        public void Test_SmartDouble_Parse_String()
+        public void SmartDouble_Parse_String_Test()
         {
             #region Similar to SmartInt
 
@@ -156,7 +154,7 @@ namespace UnitTests
             Assert.AreEqual(SmartDouble.Parse(null).isBad(), true, "Parsing null");
             Assert.AreEqual(SmartDouble.Parse("abrakadabra").isBad(), true, "Parsing \"abrakadabra\"");
 
- //           Assert.AreEqual(SmartDouble.Parse("1.0").isBad(), true, "Parsing \"1.0\"");
+            //           Assert.AreEqual(SmartDouble.Parse("1.0").isBad(), true, "Parsing \"1.0\"");
             Assert.AreEqual(SmartDouble.Parse("1 m.").isBad(), true, "Parsing \"1 m.\"");
             Assert.AreEqual(SmartDouble.Parse("x1").isBad(), true, "Parsing \"x1\"");
 
@@ -349,7 +347,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void Test_SmartDouble_ToString()
+        public void SmartDouble_ToString_Test()
         {
             #region Similar to SmartInt
 
@@ -509,14 +507,31 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void Test_SmartDouble_ToStringN()
+        public void SmartDouble_ToStringN_Test()
         {
+            Assert.AreEqual((new SmartDouble(49.6716517210007)).ToString(15), "49.6716517210007", "SmartDouble(49.6716517210007).ToString(15)");
+            Assert.AreEqual((new SmartDouble(49.6716517210007)).ToString(14), "49.6716517210007", "SmartDouble(49.6716517210007).ToString(14)");
+            Assert.AreEqual((new SmartDouble(49.6716517210007)).ToString(13), "49.6716517210007", "SmartDouble(49.6716517210007).ToString(13)");
+            Assert.AreEqual((new SmartDouble(49.6716517210007)).ToString(12), "49.671651721001", "SmartDouble(49.6716517210007).ToString(12)");
+            Assert.AreEqual((new SmartDouble(49.6716517210007)).ToString(11), "49.671651721", "SmartDouble(49.6716517210007).ToString(11)");
+            Assert.AreEqual((new SmartDouble(49.6716517210007)).ToString(10), "49.671651721", "SmartDouble(49.6716517210007).ToString(10)");
+            Assert.AreEqual((new SmartDouble(49.6716517210007)).ToString(9), "49.671651721", "SmartDouble(49.6716517210007).ToString(9)");
+            Assert.AreEqual((new SmartDouble(49.6716517210007)).ToString(8), "49.67165172", "SmartDouble(49.6716517210007).ToString(8)");
+            Assert.AreEqual((new SmartDouble(49.6716517210007)).ToString(7), "49.6716517", "SmartDouble(49.6716517210007).ToString(7)");
+            Assert.AreEqual((new SmartDouble(49.6716517210007)).ToString(6), "49.671652", "SmartDouble(49.6716517210007).ToString(6)");
+            Assert.AreEqual((new SmartDouble(49.6716517210007)).ToString(5), "49.67165", "SmartDouble(49.6716517210007).ToString(5)");
+            Assert.AreEqual((new SmartDouble(49.6716517210007)).ToString(4), "49.6717", "SmartDouble(49.6716517210007).ToString(4)");
+            Assert.AreEqual((new SmartDouble(49.6716517210007)).ToString(3), "49.672", "SmartDouble(49.6716517210007).ToString(3)");
+            Assert.AreEqual((new SmartDouble(49.6716517210007)).ToString(2), "49.67", "SmartDouble(49.6716517210007).ToString(2)");
+            Assert.AreEqual((new SmartDouble(49.6716517210007)).ToString(1), "49.7", "SmartDouble(49.6716517210007).ToString(1)");
+            Assert.AreEqual((new SmartDouble(49.6716517210007)).ToString(0), "50", "SmartDouble(49.6716517210007).ToString(0)");
+
             Assert.AreEqual("99999.98324", (new SmartDouble(99999.98324)).ToString(8), "SmartDouble.ToString(8) 99999.98324");
             Assert.AreEqual("2999.99971", (new SmartDouble(2999.99971)).ToString(8), "SmartDouble.ToString(8) 2999.99971");
         }
 
         [TestMethod]
-        public void Test_SmartDouble_Parse_ToString_BruteForce()
+        public void SmartDouble_Parse_ToString_BruteForce_Test()
         {
             int test_count = 10000000;
             int parta_max = 1000000;
@@ -532,11 +547,11 @@ namespace UnitTests
                 // if (s_partb == "0")
                 //    continue;
 
-                while((s_partb.Length > 0) && (s_partb[s_partb.Length - 1] == '0'))
+                while ((s_partb.Length > 0) && (s_partb[s_partb.Length - 1] == '0'))
                     s_partb = s_partb.Substring(0, s_partb.Length - 1);
 
                 string s_sd1 = s_parta;
-                if(!string.IsNullOrEmpty(s_partb))
+                if (!string.IsNullOrEmpty(s_partb))
                     s_sd1 += ("." + s_partb);
 
                 //if (s_sd1.Length > 12)
@@ -554,7 +569,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void Test_SmartDouble_Parse_ToString_BruteForce_Heavy()
+        public void SmartDouble_Parse_ToString_BruteForce_Heavy_Test()
         {
             int test_count = 10000000;
             int parta_max = 1000000000;

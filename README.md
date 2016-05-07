@@ -1,7 +1,7 @@
 **Simple Smart Types** is a library enriching functionality of native types
 
 **Links:**
-[NuGet](https://www.nuget.org/packages/SSTypesLT.dll), 
+[NuGet](https://www.nuget.org/packages/SSTypesLT), 
 [PerfDotNet](https://github.com/PerfDotNet)
 
 
@@ -34,6 +34,14 @@ SSTypesLT is C# solution with tests and examples.
 The significant performance gain was achieved for string parse operations. ToString methods still require optimization.
 
 Performance was measured by PerfDotNet. See [PerfDotNet](https://github.com/PerfDotNet) for details.
+
+Version 0.9.1 was used to benchmarking. 
+
+Version 0.9.1 can be installed in nuget Package Manager by the command:
+PM> Install-Package BenchmarkDotNet -Version 0.9.1
+
+See [This Link](https://www.nuget.org/packages/BenchmarkDotNet/0.9.1) for details.
+
 
 ** Test environment for the tests performed **
 
@@ -77,6 +85,3 @@ The solution has been successfully used in [GoMap.Az](http://gomap.az) project. 
 Thanks to the following people for their contributions:
 
 [AndreyAkinshin] (https://github.com/AndreyAkinshin) for his advices regarding performance tests.
-
-[Samir Salimkhanov] () for his advices regarding unit tests.
-
