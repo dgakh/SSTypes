@@ -7,12 +7,12 @@
 
 **Summary**
 
-* Contains SmartInt and SmartDouble types enriching native .NET types Int32 and Double
+* Contains SmartInt, SmartDouble, and SmartBool types enriching native .NET types Int32 and Double
 * Fast string parsing
 * Special ToString and ToStringBuilder methods
 * Supports constant BadValue for all types
 * Fully compatible with native types Int32 and Double
-* Almost fully compatible with nullable types Int32? and Double?
+* Almost fully compatible with nullable types Int32?, Double?, and Boolean?
 * Universal, save, and easy to use
 
 ## Content

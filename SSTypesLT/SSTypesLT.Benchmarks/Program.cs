@@ -8,8 +8,10 @@ namespace PerformanceTest
     {
         static void Main(string[] args)
         {
-            BenchmarkRunner.Run<SmartIntBM_SimpleOperations>();
-            BenchmarkRunner.Run<SmartDoubleBM_SimpleOperations>();
+            BenchmarkRunner.Run<SmartBool_BM>();
+
+            //BenchmarkRunner.Run<SmartIntBM_SimpleOperations>();
+            //BenchmarkRunner.Run<SmartDoubleBM_SimpleOperations>();
 
             //BenchmarkRunner.Run<SmartIntBM_Parse_IntSmartInt_ns_Digit>();
             //BenchmarkRunner.Run<SmartIntBM_Parse_IntSmartInt_ps_Digit>();

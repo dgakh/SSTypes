@@ -37,6 +37,9 @@ namespace Examples
     {
         static void Main(string[] args)
         {
+            SmartBoolExamples.Run1();
+
+
             double dd = SSTypes.SmartDouble.Parse("4897350");
             dd = dd / 0;
             bool bb = (new SSTypes.SmartDouble(dd)).isBad();
