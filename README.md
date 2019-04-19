@@ -56,16 +56,16 @@ HostCLR=MS.NET 4.0.30319.42000, Arch=64-bit RELEASE [RyuJIT]
 
 ** String Parse for Double and SmartDouble **
 
-            Method         Median      StdDev
-      Parse_Double  2,233.6640 us  37.0084 us
- Parse_SmartDouble    576.6582 us   9.8574 us
+               Method         Median      StdDev
+         Parse_Double  2,233.6640 us  37.0084 us
+    Parse_SmartDouble    576.6582 us   9.8574 us
 
 
 ** String Parse for 9-digit Int32 and SmartInt numbers **
 
-                 Method      Median     StdDev
-      Parse_Int_9_Digit  16.3008 ms  0.2596 ms
- Parse_SmartInt_9_Digit   3.4532 ms  0.0471 ms
+                    Method      Median     StdDev
+         Parse_Int_9_Digit  16.3008 ms  0.2596 ms
+    Parse_SmartInt_9_Digit   3.4532 ms  0.0471 ms
 
 
 ## Durability
